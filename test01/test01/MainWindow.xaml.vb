@@ -25,15 +25,25 @@ Class MainWindow
         tg.Children.Add(ro)
         TargetThumb.RenderTransform = tg
 
-        'AnglePropertyをソースにしてSliderValueにBindingしようとしてもうまくいかない
-        Dim b As New Binding With {.Source = TargetThumb}
-        b.Path = New PropertyPath(RotateTransform.AngleProperty)
-        sldAngle.SetBinding(Slider.ValueProperty, b)
+        ''AnglePropertyをソースにしてSliderValueにBindingしようとしてもうまくいかない
+        Dim b As Binding
+        'b = New Binding With {.Source = TargetThumb}
+        'b.Path = New PropertyPath(RotateTransform.AngleProperty)
+        'sldAngle.SetBinding(Slider.ValueProperty, b)
 
-        '逆にSliderValueをソースにしてAnglePropertyにBindingすると
-        b = New Binding With {.Source = sldAngle, .Path = New PropertyPath(Slider.ValueProperty)}
-        BindingOperations.SetBinding(ro, RotateTransform.AngleProperty, b)
-        'リンクするけど別の方法でAngleに数値指定するとリンクが解けてしまう
+        ''逆にSliderValueをソースにしてAnglePropertyにBindingすると
+        'b = New Binding With {.Source = sldAngle, .Path = New PropertyPath(Slider.ValueProperty)}
+        'BindingOperations.SetBinding(ro, RotateTransform.AngleProperty, b)
+        ''リンクするけど別の方法でAngleに数値指定するとリンクが解けてしまう
+
+        'これで行けた！ソースにはThumbじゃなくて、その中のRotateTransformを指定する
+        ro = GetRotateTransform(TargetThumb)
+        b = New Binding With {.Source = ro,
+            .Path = New PropertyPath(RotateTransform.AngleProperty),
+            .Mode = BindingMode.TwoWay}
+        sldAngle.SetBinding(Slider.ValueProperty, b)
+        'ってことはDependencyPropertyを使ったEx2Thumbはあんまり意味がなくなったかな
+        'AnglePropertyが指定しやすいことくらいか
 
 
         '                BindingOperations.SetBinding(ro, RotateTransform.AngleProperty, b)
