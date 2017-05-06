@@ -11,10 +11,10 @@ Imports System.Windows
 
 ' アセンブリ属性の値を確認します
 
-<Assembly: AssemblyTitle("WpfApp1")>
+<Assembly: AssemblyTitle("test01")>
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("WpfApp1")>
+<Assembly: AssemblyProduct("test01")>
 <Assembly: AssemblyCopyright("Copyright ©  2017")>
 <Assembly: AssemblyTrademark("")>
 <Assembly: ComVisible(false)>
@@ -42,7 +42,7 @@ Imports System.Windows
 
 
 'このプロジェクトが COM に公開される場合、次の GUID が typelib の ID になります
-<Assembly: Guid("58511213-741b-4a73-8c32-212bb1ca26b0")>
+<Assembly: Guid("5d057ecc-295f-4e5d-b51d-4ecb3d316e31")>
 
 ' アセンブリのバージョン情報は次の 4 つの値で構成されています:
 '
