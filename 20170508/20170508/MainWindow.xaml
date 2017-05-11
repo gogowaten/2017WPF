@@ -1,0 +1,27 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170508"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+
+  <Canvas Name="MyCanvas">
+    <WrapPanel>
+      <StackPanel Orientation="Horizontal">
+        <StackPanel>
+          <Button Name="Button1" Content="CanvasToImage"/>
+          <Button Name="Button2" Content="Image" Canvas.Top="25"/>
+        </StackPanel>
+        <StackPanel Name="MyStakcP1">
+          <Button Name="btnCheck1" Content="Check1" Canvas.Top="50"/>
+
+        </StackPanel>
+      </StackPanel>
+
+    </WrapPanel>
+
+  </Canvas>
+
+</Window>
