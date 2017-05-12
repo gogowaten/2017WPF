@@ -1,6 +1,8 @@
 ﻿'.NET TIPS： WPF/ UWP： コントロールのエッジをシャープに描画するには？［XAML］ - ＠IT
 'http://www.atmarkit.co.jp/ait/articles/1602/17/news034.html
 
+'EdgeModeでアンチエイリアスの有無を切り替え、WPF ( ソフトウェア ) - 午後わてんのブログ - Yahoo!ブログ
+'https://blogs.yahoo.co.jp/gogowaten/14910458.html
 
 Class MainWindow
     Private MyRect As Path
