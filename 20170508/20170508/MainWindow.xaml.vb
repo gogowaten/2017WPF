@@ -22,10 +22,12 @@ Class MainWindow
         AddHandler Button1.Click, AddressOf Button1_Click
         AddHandler Button2.Click, AddressOf Button2_Click
         AddHandler btnCheck1.Click, AddressOf btnCheck1_Click
+        AddHandler btnEdge.Click, AddressOf btnEdge_Click
+        AddHandler btnUseLayoutRounding.Click, AddressOf btnUseLayoutRounding_Click
+        AddHandler btnSnapsToDevicePixels.Click, AddressOf btnSnapsToDevicePixels_Click
+        AddHandler btnScalingMode.Click, AddressOf btnNearestNeighbor_Click
+        AddHandler btnLocateReset.Click, AddressOf btnLocateReset_Click
 
-
-        'MyCanvas.SnapsToDevicePixels = True
-        'MyCanvas.UseLayoutRounding = False
         'Me.VisualBitmapScalingMode = BitmapScalingMode.NearestNeighbor
 
 
@@ -34,45 +36,54 @@ Class MainWindow
 
 
 
-        MyPath = New Path With {.Stroke = Brushes.Red, .StrokeThickness = 1}
-        MyPath.Data = New RectangleGeometry(New Rect(0, 0, 50, 50))
-        Canvas.SetLeft(MyPath, 100) : Canvas.SetTop(MyPath, 10)
-        MyCanvas.Children.Add(MyPath)
-        'MyPath.SnapsToDevicePixels = True
-        'MyPath.UseLayoutRounding = True
-        'RenderOptions.SetBitmapScalingMode(MyPath, BitmapScalingMode.NearestNeighbor)
-        RenderOptions.SetEdgeMode(MyPath, EdgeMode.Aliased)
+        'MyPath = New Path With {.Stroke = Brushes.Red, .StrokeThickness = 1}
+        'MyPath.Data = New RectangleGeometry(New Rect(0, 0, 50, 50))
+        'Canvas.SetLeft(MyPath, 100) : Canvas.SetTop(MyPath, 10)
+        'MyCanvas.Children.Add(MyPath)
+        'RenderOptions.SetEdgeMode(MyPath, EdgeMode.Aliased)
 
-        Dim bi As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\hueRect135.png"))
+        'Dim bi As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\hueRect135.png"))
+        Dim bi As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\border_round.bmp"))
+
+
         MyImage = New Image
         MyImage.Source = bi
-        Canvas.SetLeft(MyImage, 100) : Canvas.SetTop(MyImage, 100)
+        MyImage.RenderTransform = GetRenderTransform()
+        MyImage.RenderTransformOrigin = New Point(0.5, 0.5)
+
+        Canvas.SetLeft(MyImage, 20) : Canvas.SetTop(MyImage, 20)
+        'Canvas.SetLeft(MyImage, 20.5) : Canvas.SetTop(MyImage, 50.5)
         MyCanvas.Children.Add(MyImage)
+        'MyCanvas.SnapsToDevicePixels = True
+        'MyCanvas.UseLayoutRounding = True
+        'MyImage.SnapsToDevicePixels = True
+        'MyImage.UseLayoutRounding = True
+        'RenderOptions.SetEdgeMode(MyImage, EdgeMode.Aliased)
+        'RenderOptions.SetBitmapScalingMode(MyImage, BitmapScalingMode.NearestNeighbor)
 
-        MyLine = New Line
-        With MyLine
-            .Stroke = Brushes.Tomato
-            .StrokeThickness = 1.0
-            .X1 = 0 : .X2 = 100 : .Y1 = 0 : .Y2 = 50
-        End With
-        RenderOptions.SetBitmapScalingMode(MyLine, BitmapScalingMode.NearestNeighbor)
-        RenderOptions.SetEdgeMode(MyLine, EdgeMode.Aliased)
-        Canvas.SetLeft(MyLine, 210) : Canvas.SetTop(MyLine, 150)
-        MyCanvas.Children.Add(MyLine)
 
-        Call AddLine()
+        'MyLine = New Line
+        'With MyLine
+        '    .Stroke = Brushes.Tomato
+        '    .StrokeThickness = 1.0
+        '    .X1 = 0 : .X2 = 100 : .Y1 = 0 : .Y2 = 50
+        'End With
+        ''RenderOptions.SetBitmapScalingMode(MyLine, BitmapScalingMode.NearestNeighbor)
+        ''RenderOptions.SetEdgeMode(MyLine, EdgeMode.Aliased)
+        'Canvas.SetLeft(MyLine, 210) : Canvas.SetTop(MyLine, 150)
+        'MyCanvas.Children.Add(MyLine)
 
+        Call MySetBinding()
     End Sub
-    Private Sub AddLine()
-        Dim myL As New Line
-        With myL
-            .Stroke = Brushes.Tomato
-            .StrokeThickness = 1.0
-            .X1 = 0 : .X2 = 100 : .Y1 = 0 : .Y2 = 50
+    Private Function GetRenderTransform() As Transform
+        Dim tg As New TransformGroup
+        With tg.Children
+            .Add(New ScaleTransform(1.0, 1.0))
+            .Add(New SkewTransform)
+            .Add(New RotateTransform)
         End With
-        MyStakcP1.Children.Add(myL)
-
-    End Sub
+        Return tg
+    End Function
     Private Sub CanvasToImageSave(target As FrameworkElement)
         Dim bmp As New RenderTargetBitmap(
             target.ActualWidth, target.ActualHeight, 96, 96, PixelFormats.Pbgra32)
@@ -84,14 +95,6 @@ Class MainWindow
         End Using
     End Sub
     Private Sub ElemantToImageSave(target As FrameworkElement)
-        'Dim r As Rect = GetRect(target)
-        'Dim dv As New DrawingVisual
-        'Using dc As DrawingContext = dv.RenderOpen
-        '    Dim vb As New VisualBrush(MyCanvas)
-        '    dc.DrawRectangle(vb, Nothing, r)
-        'End Using
-        'Dim rtb As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
-        'Dim bf As BitmapFrame = BitmapFrame.Create(rtb)
         Dim img As Image = target
 
         Dim bf As BitmapFrame = BitmapFrame.Create(img.Source)
@@ -107,6 +110,77 @@ Class MainWindow
         Dim r As Rect = gt.TransformBounds(New Rect(s))
         Return r
     End Function
+
+    'Binding
+    Private Sub MySetBinding()
+        Dim b As Binding
+
+        b = New Binding With {
+            .Source = MyImage,
+            .Path = New PropertyPath(RenderOptions.EdgeModeProperty),
+            .StringFormat = "EdgeMode = {0}"
+        }
+        tbEdge.SetBinding(TextBlock.TextProperty, b)
+
+        b = New Binding With {
+            .Source = MyImage,
+            .Path = New PropertyPath(UseLayoutRoundingProperty),
+            .StringFormat = "UseLayoutRounding = {0}"}
+        tbUseLayout.SetBinding(TextBlock.TextProperty, b)
+
+        b = New Binding With {
+            .Source = MyImage,
+            .Path = New PropertyPath(SnapsToDevicePixelsProperty),
+            .StringFormat = "SnapsToDevicePixels = {0}"}
+        tbSnapTo.SetBinding(TextBlock.TextProperty, b)
+
+        b = New Binding With {
+            .Source = MyImage,
+            .Path = New PropertyPath(RenderOptions.BitmapScalingModeProperty),
+            .StringFormat = "ScalingMode = {0}"}
+        tbScalingMode.SetBinding(TextBlock.TextProperty, b)
+
+        Dim st As ScaleTransform = GetTransform(GetType(ScaleTransform))
+        b = New Binding With {.Source = st, .Path = New PropertyPath(ScaleTransform.ScaleXProperty),
+            .StringFormat = "ScaleX = {0}"}
+        sldScaleX.SetBinding(Slider.ValueProperty, b)
+        tbScaleX.SetBinding(TextBlock.TextProperty, b)
+        b = New Binding With {.Source = st, .Path = New PropertyPath(ScaleTransform.ScaleYProperty),
+            .StringFormat = "ScaleY = {0}"}
+        sldScaleY.SetBinding(Slider.ValueProperty, b)
+        tbScaleY.SetBinding(TextBlock.TextProperty, b)
+
+        Dim ro As RotateTransform = GetTransform(GetType(RotateTransform))
+        b = New Binding With {.Source = ro, .Path = New PropertyPath(RotateTransform.AngleProperty),
+            .StringFormat = "RotateAngle = {0}"}
+        sldRotateAngle.SetBinding(Slider.ValueProperty, b)
+        tbRotateAngle.SetBinding(TextBlock.TextProperty, b)
+
+        b = New Binding With {.Source = MyImage, .Path = New PropertyPath(Canvas.TopProperty),
+            .StringFormat = "CanvasTop = {0}"}
+        sldCanvasTop.SetBinding(Slider.ValueProperty, b)
+        tbCanvasTop.SetBinding(TextBlock.TextProperty, b)
+
+    End Sub
+    Private Function GetText(t As Transform) As Transform
+
+    End Function
+    Private Function GetTransform(t As Type) As Transform
+        Dim tg As TransformGroup = MyImage.RenderTransform
+        For Each c As Transform In tg.Children
+            If c.GetType = t Then
+                Return c
+            End If
+        Next
+        Return Nothing
+    End Function
+    Protected Overrides Function MeasureOverride(availableSize As Size) As Size
+        Return MyBase.MeasureOverride(availableSize)
+
+    End Function
+
+    'イベント
+
     Private Sub Button1_Click(sender As Object, e As RoutedEventArgs)
         Call CanvasToImageSave(MyCanvas)
     End Sub
@@ -115,7 +189,37 @@ Class MainWindow
     End Sub
 
     Private Sub btnCheck1_Click(sender As Object, e As RoutedEventArgs)
-        MsgBox($"{MyPath.ActualWidth}, {MyPath.ActualHeight}")
+        MsgBox($"{MyImage.ActualWidth}, {MyImage.ActualHeight}")
+        MsgBox(Canvas.GetLeft(MyImage))
+    End Sub
 
+    Private Sub btnEdge_Click(sender As Object, e As RoutedEventArgs)
+        If RenderOptions.GetEdgeMode(MyImage) = EdgeMode.Aliased Then
+            RenderOptions.SetEdgeMode(MyImage, EdgeMode.Unspecified)
+        Else
+            RenderOptions.SetEdgeMode(MyImage, EdgeMode.Aliased)
+        End If
+    End Sub
+
+    Private Sub btnUseLayoutRounding_Click(sender As Object, e As RoutedEventArgs)
+        MyImage.UseLayoutRounding = Not MyImage.UseLayoutRounding
+    End Sub
+
+    Private Sub btnSnapsToDevicePixels_Click(sender As Object, e As RoutedEventArgs)
+        MyImage.SnapsToDevicePixels = Not MyImage.SnapsToDevicePixels
+    End Sub
+
+    Private Sub btnNearestNeighbor_Click(sender As Object, e As RoutedEventArgs)
+        Dim sm As Integer = RenderOptions.GetBitmapScalingMode(MyImage)
+        If sm < 3 Then
+            sm += 1
+        Else
+            sm = 0
+        End If
+        RenderOptions.SetBitmapScalingMode(MyImage, sm)
+    End Sub
+
+    Private Sub btnLocateReset_Click(sender As Object, e As RoutedEventArgs)
+        Canvas.SetTop(MyImage, 20)
     End Sub
 End Class
