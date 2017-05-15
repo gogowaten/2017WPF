@@ -10,7 +10,7 @@
   <WrapPanel>
     <StackPanel Orientation="Horizontal">
       <StackPanel>
-        <Canvas Name="MyCanvas" Width="100">
+        <Canvas Name="MyCanvas" Width="150">
         </Canvas>
       </StackPanel>
       <StackPanel Name="MyStakcP1" Width="180">

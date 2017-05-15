@@ -19,6 +19,7 @@ Class MainWindow
 
     End Sub
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+
         AddHandler Button1.Click, AddressOf Button1_Click
         AddHandler Button2.Click, AddressOf Button2_Click
         AddHandler btnCheck1.Click, AddressOf btnCheck1_Click
@@ -29,10 +30,6 @@ Class MainWindow
         AddHandler btnLocateReset.Click, AddressOf btnLocateReset_Click
 
         'Me.VisualBitmapScalingMode = BitmapScalingMode.NearestNeighbor
-
-
-        Dim fa As New FrameworkElementFactory(GetType(Image), "TempImage")
-        Dim ct As New ControlTemplate(GetType(Thumb))
 
 
 
@@ -49,32 +46,24 @@ Class MainWindow
         MyImage = New Image
         MyImage.Source = bi
         MyImage.RenderTransform = GetRenderTransform()
+
         MyImage.RenderTransformOrigin = New Point(0.5, 0.5)
 
         Canvas.SetLeft(MyImage, 20) : Canvas.SetTop(MyImage, 20)
         'Canvas.SetLeft(MyImage, 20.5) : Canvas.SetTop(MyImage, 50.5)
         MyCanvas.Children.Add(MyImage)
-        'MyCanvas.SnapsToDevicePixels = True
-        'MyCanvas.UseLayoutRounding = True
-        'MyImage.SnapsToDevicePixels = True
-        'MyImage.UseLayoutRounding = True
-        'RenderOptions.SetEdgeMode(MyImage, EdgeMode.Aliased)
-        'RenderOptions.SetBitmapScalingMode(MyImage, BitmapScalingMode.NearestNeighbor)
 
-
-        'MyLine = New Line
-        'With MyLine
-        '    .Stroke = Brushes.Tomato
-        '    .StrokeThickness = 1.0
-        '    .X1 = 0 : .X2 = 100 : .Y1 = 0 : .Y2 = 50
-        'End With
-        ''RenderOptions.SetBitmapScalingMode(MyLine, BitmapScalingMode.NearestNeighbor)
-        ''RenderOptions.SetEdgeMode(MyLine, EdgeMode.Aliased)
-        'Canvas.SetLeft(MyLine, 210) : Canvas.SetTop(MyLine, 150)
-        'MyCanvas.Children.Add(MyLine)
 
         Call MySetBinding()
+
     End Sub
+
+    Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        Dim w1 As New Window1 : w1.Show()
+        Dim w2 As New Window2 : w2.Show()
+
+    End Sub
+
     Private Function GetRenderTransform() As Transform
         Dim tg As New TransformGroup
         With tg.Children
@@ -162,9 +151,7 @@ Class MainWindow
         tbCanvasTop.SetBinding(TextBlock.TextProperty, b)
 
     End Sub
-    Private Function GetText(t As Transform) As Transform
 
-    End Function
     Private Function GetTransform(t As Type) As Transform
         Dim tg As TransformGroup = MyImage.RenderTransform
         For Each c As Transform In tg.Children
@@ -173,10 +160,6 @@ Class MainWindow
             End If
         Next
         Return Nothing
-    End Function
-    Protected Overrides Function MeasureOverride(availableSize As Size) As Size
-        Return MyBase.MeasureOverride(availableSize)
-
     End Function
 
     'イベント
@@ -222,4 +205,5 @@ Class MainWindow
     Private Sub btnLocateReset_Click(sender As Object, e As RoutedEventArgs)
         Canvas.SetTop(MyImage, 20)
     End Sub
+
 End Class

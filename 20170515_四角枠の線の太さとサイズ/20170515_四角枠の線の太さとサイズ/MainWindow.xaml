@@ -1,0 +1,22 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170515_四角枠の線の太さとサイズ"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="400">
+  <Grid>
+    <StackPanel Orientation="Horizontal" Margin="10,20,0,0">
+      <StackPanel Name="MyLeftPanel" Width="180">
+        <Canvas Name="MyLeftCanvas" Height="100"/>
+        <Button Name="BtnCheck" Content="check"/>
+        <TextBlock Name="TbCheck" Text="tbCheck"/>
+        <Slider Name="SldBold" Maximum="10" TickFrequency="0.1" IsSnapToTickEnabled="True" LargeChange="0.1"/>
+      </StackPanel>
+      <StackPanel Name="MyRightPanel" Width="180" Margin="10,0">
+        <Canvas Name="MyRightCanvas" Height="100"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>
