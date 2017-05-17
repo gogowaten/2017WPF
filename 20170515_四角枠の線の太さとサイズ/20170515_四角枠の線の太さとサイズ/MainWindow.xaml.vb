@@ -95,16 +95,30 @@
     End Sub
 
     Private Sub BtnCheck_Click(sender As Object, e As RoutedEventArgs) Handles BtnCheck.Click
-        Call TestScale()
-        Dim rg As RectangleGeometry = MyPathRectangle.Data
-        MsgBox(rg.RadiusX)
+        'Call TestScale()
+        'Dim rg As RectangleGeometry = MyPathRectangle.Data
+        'MsgBox(rg.RadiusX)
         Dim gt As GeneralTransform = MyPathRectangle.TransformToVisual(MyLeftCanvas)
-        Dim s As Size = MyLeftCanvas.RenderSize
-        Dim r As Rect = gt.TransformBounds(New Rect(0, 0, MyPathRectangle.ActualWidth, MyPathRectangle.ActualHeight))
-        Dim v As New VisualBrush(MyPathRectangle)
+        'gt = MyLeftCanvas.TransformToVisual(MyPathRectangle)
+        Dim s As Size = MyPathRectangle.RenderSize
+        Dim x As Double = Canvas.GetLeft(MyPathRectangle)
+        Dim y As Double = Canvas.GetTop(MyPathRectangle)
+        Dim r As Rect = gt.TransformBounds(New Rect(x, y, s.Width, s.Height))
+
         Dim dv As New DrawingVisual
         Using dc As DrawingContext = dv.RenderOpen
-            Dim vb As New VisualBrush()
+            Dim vb As New VisualBrush(MyPathRectangle)
+            dc.DrawRectangle(vb, Nothing, r)
+        End Using
+
+        Dim bmp As New RenderTargetBitmap(s.Width,
+                                          s.Height, 96, 96, PixelFormats.Pbgra32)
+        bmp.Render(dv)
+
+        Dim encoder As New PngBitmapEncoder
+        encoder.Frames.Add(BitmapFrame.Create(bmp))
+        Using fs As New System.IO.FileStream("PathRectangle.png", System.IO.FileMode.Create)
+            encoder.Save(fs)
         End Using
 
     End Sub
