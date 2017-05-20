@@ -1,0 +1,50 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170520"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+  <Grid>
+    <StackPanel Orientation="Horizontal" Margin="10,50,10,0">
+      <StackPanel Width="200">
+        <Button Name="btnTextUpdate" Content="btnTextUpdate"/>
+        <TextBlock Text="{Binding ElementName=Angle1, Path=Value, StringFormat= RedAngle \= 0.0}"/>
+        <Slider Name="Angle1" Value="0" Maximum="90" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1"/>
+        <TextBlock Text="{Binding ElementName=Angle2, Path=Value, StringFormat= BlueAngle \= 0.0}"/>
+        <Slider Name="Angle2" Value="10" Maximum="90" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1"/>
+        
+        <TextBlock Name="MyTextBlock1" Text="tb1"/>
+        <TextBlock Name="MyTextBlock2" Text="tb1"/>
+        
+      </StackPanel>
+      <StackPanel>
+        <Canvas Name="MyCanvas">
+          <Border Name="RedBorder" Width="50" Height="50" Canvas.Left="0" Canvas.Top="0" Background="Red" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform Angle="{Binding ElementName=Angle1, Path=Value}"/>
+                <TranslateTransform/>
+              </TransformGroup>
+            </Border.RenderTransform>
+
+          </Border>
+          <Border Name="BlueBorder" Width="50" Height="50" Canvas.Left="100" Canvas.Top="50" Background="Blue" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform Angle="{Binding ElementName=Angle2, Path=Value}"/>
+                <TranslateTransform/>
+              </TransformGroup>
+            </Border.RenderTransform>
+          </Border>
+        </Canvas>
+      </StackPanel>
+
+    </StackPanel>
+  </Grid>
+</Window>

@@ -1,0 +1,21 @@
+﻿<Window x:Class="Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170517"
+        mc:Ignorable="d"
+        Title="Window1" Height="400" Width="500">
+    <Grid>
+    <StackPanel Orientation="Horizontal" Margin="5,50,0,0">
+      <StackPanel Name="MyStackPanel左" Width="200" Background="FloralWhite">
+        <TextBlock Name="tbRectSize1" Text="RectSize1"/>
+        <TextBlock Name="tbRectSize2" Text="RectSize2"/>
+        <TextBlock Name="tbRectSizeAll" Text="RectSizeAll"/>
+      </StackPanel>
+      <StackPanel>
+        <Canvas Name="MyCanvas"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>
