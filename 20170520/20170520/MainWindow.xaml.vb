@@ -27,6 +27,11 @@
 
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Dim w1 As New Window1 : w1.Show()
-
+        Dim w2 As New Window2 : w2.Show()
     End Sub
+
+    'Private Sub Angle1_ValueChanged(sender As Object, e As RoutedPropertyChangedEventArgs(Of Double)) Handles Angle1.ValueChanged
+
+    '    Call SetTextBlock()
+    'End Sub
 End Class

@@ -1,0 +1,42 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170522_回転した単体Thumbを画像ファイル保存"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="400" Width="525">
+  <Grid>
+    <StackPanel Orientation="Horizontal" Margin="10,50,10,0">
+      <StackPanel Width="200">
+        <TextBlock Name="tbMyCanvasEdgeMode"/>
+        <TextBlock Name="tbTempCanvasEdgeMode"/>
+        <Button Name="btnEdgeMode" Content="ChangeMyCanvasEdgeMode"/>
+        <Button Name="btnTempCanvasEdgeMode" Content="ChangeTempCanvasEdgeMode"/>
+        <Button Name="btnTextUpdate" Content="btnTextUpdate"/>
+        <Button Name="btnSave" Content="Save"/>
+        <TextBlock Text="{Binding ElementName=Angle1, Path=Value, StringFormat= RedAngle \= 0.0}"/>
+        <Slider Name="Angle1" Value="0" Maximum="90" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>
+        <TextBlock Text="{Binding ElementName=sldLeft, Path=Value, StringFormat= Locate \= 0.0 }"/>
+        <Slider Name="sldLeft" Value="50" Maximum="200" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>
+        <TextBlock Text="{Binding ElementName=sldTop, Path=Value, StringFormat= Locate \= 0.0 }"/>
+        <Slider Name="sldTop" Value="50" Maximum="200" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>
+
+        <TextBlock Name="MyTextBlock1" Text="tb"/>
+        <TextBlock Name="MyTextBlock2" Text="tb"/>
+        <TextBlock Name="MyTextBlock3" Text="tb"/>
+        <TextBlock Name="MyTextBlock4" Text="tb"/>
+        <TextBlock Name="MyTextBlock5" Text="tb"/>
+        <TextBlock Name="MyTextBlock6" Text="tb"/>
+      </StackPanel>
+      <StackPanel>
+        <Canvas Name="MyCanvas">
+          <!--<Canvas Name="MyCanvas" Background="AliceBlue" Width="200" Height="300">-->
+          <Thumb Name="MyThumb1" Width="100" Height="100" Canvas.Left="100" Canvas.Top="100"/>
+          <Border Name="MyBlueBorder" Width="100" Height="30" Background="Blue"/>
+        </Canvas>
+      </StackPanel>
+
+    </StackPanel>
+  </Grid>
+</Window>
