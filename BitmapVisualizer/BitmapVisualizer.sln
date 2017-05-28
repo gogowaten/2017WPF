@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "BitmapVisualizer", "BitmapVisualizer\BitmapVisualizer.vbproj", "{D9BDE21A-BB42-4006-9814-6055643CB4D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{77C8D998-94AE-4FE6-A35D-9D5A3852079E}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "DebuggerTester2", "DebuggerTester2\DebuggerTester2.vbproj", "{86B04A90-B0AF-4145-AEA1-216A44C05E0E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9BDE21A-BB42-4006-9814-6055643CB4D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9BDE21A-BB42-4006-9814-6055643CB4D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9BDE21A-BB42-4006-9814-6055643CB4D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9BDE21A-BB42-4006-9814-6055643CB4D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86B04A90-B0AF-4145-AEA1-216A44C05E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86B04A90-B0AF-4145-AEA1-216A44C05E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86B04A90-B0AF-4145-AEA1-216A44C05E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86B04A90-B0AF-4145-AEA1-216A44C05E0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

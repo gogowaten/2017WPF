@@ -137,6 +137,14 @@ Class MainWindow
         Dim s As Size = New Size(TempBorder.Width, TempBorder.Height)
         Dim r As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim bmp As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
+        'Dim bmi As New BitmapImage(New Uri("D:\ブログ用\チェック用2\NEC_6506_2016_11_18_午後わてん.jpg"))
+        'Dim bms As BitmapSource = bmi
+        'Dim bmm As New WriteableBitmap(bms)
+        '        Debugger Image Visualizer (Preview) - Visual Studio Marketplace
+        'https://marketplace.visualstudio.com/items?itemName=AleksanderBerus.DebuggerImageVisualizerPreview
+
+
+
         bmp.Render(TempCanvas)
         Call Bitmap2pngFile(bmp, filePath)
     End Sub
@@ -563,14 +571,14 @@ Class MainWindow
     Private Sub SaveImage_Click(sender As Object, e As RoutedEventArgs)
         Dim angle As String = Angle1.Value.ToString
         Dim filePath As String = GetNowToString() & "_" & angle & "度_"
-        Call SaveImage2(filePath & "SaveImage2.png")
+        'Call SaveImage2(filePath & "SaveImage2.png")
         'Call SaveImage3(filePath & "SaveImage3.png")
         'Call SaveImage4(filePath & "SaveImage4.png")
         'Call SaveImageTempCanvasVB(filePath & "SaveImageTempCanvasVB.png") '微妙にずれるけど他のがあっても単体で保存できる
         'Call SaveImageMyCanvasVB2(filePath & "SaveImageMyCanvasVB2.png") '半透明が出る？
         'Call SaveImageMyCanvasVB3(filePath & "SaveImageMyCanvasVB3.png") '半透明が出る
         'Call SaveImageMyCanvasVB4(filePath & "SaveImageMyCanvasVB4.png") 'できた！ただし他のと重なっているときはそのまま表示される
-        Call SaveImageMyCanvasVB5(filePath & "SaveImageMyCanvasVB5.png") 'できた！他のが重なっていても単体で保存できた！
+        'Call SaveImageMyCanvasVB5(filePath & "SaveImageMyCanvasVB5.png") 'できた！他のが重なっていても単体で保存できた！
         'Call SaveImageTempCanvasVB2(filePath & "SaveImageTempCanvasVB2.png") '多分これが1番完璧だと思います→フラグ回収
 
         Call SaveImageTempCanvasVB3(filePath & "SaveImageTempCanvasVB3.png") '多分これが1番完璧だと思います、サイズ切り上げ、見た目に近いのでこれが良さそう
