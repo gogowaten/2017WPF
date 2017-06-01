@@ -1,4 +1,4 @@
-﻿'2017/05/22 やっとできた
+﻿
 'Thumb
 '   ┗ControlTemplate
 '      ┗Canvas(TempCanvas) これに回転や拡大を適用
@@ -8,10 +8,10 @@
 'Canvasの中にBorderとImageを入れたControlTemplateを作成、これを
 'ThumbのControlTemplateに指定
 '回転や拡大はControlTemplateの中のCanvasに適用する
-'回転の中心軸は中心、つまりRenderTransformOriginal=point(0.5,0.5)
+'回転の中心軸は中心、RenderTransformOriginal=point(0.5,0.5)
 'Thumbを画像ファイル保存、アンチエイリアスなしでも表示されている見た目通りの画像にしたい
 
-'TempCanvasのVisualBrushを作成して、これで塗る
+
 
 Imports System.Windows.Controls.Primitives
 
@@ -91,8 +91,8 @@ Class MainWindow
         TempBorder = ct.FindName("TempBorder", MyThumb1)
         TempCanvas = ct.FindName("TempCanvas", MyThumb1)
         With TempBorder
-            .Width = 200
-            .Height = 200
+            .Width = 100
+            .Height = 20
             .Background = Brushes.Red
         End With
         '必要なかも？

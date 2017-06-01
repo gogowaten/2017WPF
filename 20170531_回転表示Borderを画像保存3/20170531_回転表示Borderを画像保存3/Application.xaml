@@ -1,0 +1,9 @@
+﻿<Application x:Class="Application"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:_20170531_回転表示Borderを画像保存3"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        
+    </Application.Resources>
+</Application>

@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:_20170522_回転した単体Thumbを画像ファイル保存"
+        xmlns:local="clr-namespace:_20170601_回転表示のThumbを画像ファイル2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="525">
-  <Grid>
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
     <StackPanel Orientation="Horizontal" Margin="10,50,10,0">
       <StackPanel Width="200">
         <TextBlock Name="tbMyCanvasEdgeMode"/>
@@ -35,7 +35,7 @@
         <Canvas Name="MyCanvas">
           <!--<Canvas Name="MyCanvas" Background="AliceBlue" Width="200" Height="300">-->
           <Thumb Name="MyThumb1" Width="100" Height="100" Canvas.Left="100" Canvas.Top="100"/>
-          <Border Name="MyBlueBorder" Width="100" Height="30" Background="Blue"/>
+          <Thumb Name="MyBlueBorder" Width="100" Height="30" Background="Blue"/>
         </Canvas>
       </StackPanel>
 
