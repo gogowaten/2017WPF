@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:_20170601_回転表示のThumbを画像ファイル2"
+        xmlns:local="clr-namespace:_20170602_回転表示のThumbを画像ファイル3"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="350">
+        Title="MainWindow" Height="350" Width="525">
     <Grid>
     <StackPanel Orientation="Horizontal" Margin="10,50,10,0">
       <StackPanel Width="200">
@@ -21,21 +21,24 @@
         <Slider Name="sldLeft" Value="50" Maximum="200" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>
         <TextBlock Text="{Binding ElementName=sldTop, Path=Value, StringFormat= Locate \= 0.0 }"/>
         <Slider Name="sldTop" Value="50" Maximum="200" SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>
+        <TextBlock Text="{Binding ElementName=sldHeight, Path=Value, StringFormat= Height \= 0.00 }"/>
+        <Slider Name="sldHeight" Value="2" Minimum="2" Maximum="4" SnapsToDevicePixels="True" TickFrequency="0.01" LargeChange="0.01" IsSnapToTickEnabled="True"/>
 
         <TextBlock Name="MyTextBlock1" Text="tb"/>
-        <!--<TextBlock Name="MyTextBlock2" Text="tb"/>
+        <TextBlock Name="MyTextBlock2" Text="tb"/>
         <TextBlock Name="MyTextBlock3" Text="tb"/>
         <TextBlock Name="MyTextBlock4" Text="tb"/>
         <TextBlock Name="MyTextBlock5" Text="tb"/>
-        <TextBlock Name="MyTextBlock6" Text="tb"/>-->
+        <TextBlock Name="MyTextBlock6" Text="tb"/>
         <TextBlock Name="MyTextBlock7" Text="tb"/>
         <TextBlock Name="MyTextBlock8" Text="tb"/>
       </StackPanel>
       <StackPanel>
         <Canvas Name="MyCanvas">
           <!--<Canvas Name="MyCanvas" Background="AliceBlue" Width="200" Height="300">-->
-          <Thumb Name="MyThumb1" Width="100" Height="100" Canvas.Left="50" Canvas.Top="50"/>
-          <Thumb Name="MyBlueBorder" Width="100" Height="30" Background="Blue" Visibility="Visible"/>
+          <Thumb Name="MyThumb1" Width="100" Height="100" Canvas.Left="100" Canvas.Top="100"/>
+          <Thumb Name="MyBlueBorder" Width="100" Height="30" Background="Blue"/>
+          
         </Canvas>
       </StackPanel>
 

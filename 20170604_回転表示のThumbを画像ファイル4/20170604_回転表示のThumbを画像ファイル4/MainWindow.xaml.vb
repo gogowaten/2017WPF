@@ -1,9 +1,10 @@
-﻿
+﻿'回転表示のThumbを画像ファイル2からの改変
+'画像ファイルを表示
 'Thumb
 '   ┗ControlTemplate
 '      ┗Canvas(TempCanvas)
-'          ┣Border(TempBorder) これに回転や拡大を適用
-'          ┗Image
+'          ┣Border(TempBorder)
+'          ┗Image(TempImage) これに回転や拡大を適用
 
 'Canvasの中にBorderとImageを入れたControlTemplateを作成、これを
 'ThumbのControlTemplateに指定
@@ -18,13 +19,13 @@ Imports System.Windows.Controls.Primitives
 Class MainWindow
 
     Private MyControlTemplate As ControlTemplate
-    Private TempBorder As Border 'ControlTemplateの中のBorder
+    Private TempImage As Image 'ControlTemplateの中のImage
     Private TempCanvas As Canvas 'ControlTemplateの中のCanvas
 
     Private Sub TextUpdate()
         Dim r As Rect
         '使うのはこれ
-        r = TempBorder.TransformToVisual(MyCanvas).TransformBounds(GetRect(TempBorder))
+        r = TempImage.TransformToVisual(MyCanvas).TransformBounds(GetRect(TempImage))
         MyTextBlock1.Text = $" {r.X:0.0000}, {r.Y:0.0000}, {r.Width:0.0000}, {r.Height:0.0000}"
         MyTextBlock7.Text = $"左上 = ({r.X:0.0000}, {r.Y:0.0000})"
         MyTextBlock8.Text = $"右下 = ({r.X + r.Width:0.0000}, {r.Y + r.Height:0.0000})"
@@ -45,8 +46,8 @@ Class MainWindow
         ''Dim gt2 As GeneralTransform = TempCanvas.TransformToDescendant(MyCanvas)
         ''Dim gt3 As GeneralTransform = TempCanvas.TransformToAncestor(MyThumb1)
         ''Dim gt4 As GeneralTransform = TempCanvas.TransformToDescendant(MyThumb1)
-        ''Dim gt5 As GeneralTransform = TempCanvas.TransformToAncestor(TempBorder)
-        ''Dim gt6 As GeneralTransform = TempBorder.TransformToDescendant(TempBorder)
+        ''Dim gt5 As GeneralTransform = TempCanvas.TransformToAncestor(TempImage)
+        ''Dim gt6 As GeneralTransform = TempImage.TransformToDescendant(TempImage)
 
 
         ''RenderTransform
@@ -58,7 +59,7 @@ Class MainWindow
 
 
     End Sub
-    Private Function GetRect(b As FrameworkElement)
+    Private Function GetRect(b As FrameworkElement) As Rect
         'Return New Rect(Canvas.GetLeft(b), Canvas.GetTop(b), b.Width, b.Height)
         Return New Rect(Canvas.GetLeft(b), Canvas.GetTop(b), b.ActualWidth, b.ActualHeight)
     End Function
@@ -94,21 +95,25 @@ Class MainWindow
         MyThumb1.Template = MyControlTemplate
         MyThumb1.ApplyTemplate() 'Template再構築
         Dim ct As ControlTemplate = MyThumb1.Template
-        TempBorder = ct.FindName("TempBorder", MyThumb1)
+        TempImage = ct.FindName("TempImage", MyThumb1)
         TempCanvas = ct.FindName("TempCanvas", MyThumb1)
-        With TempBorder
-            .Width = 10
-            .Height = 10
-            .Background = Brushes.Red
+        Dim bmp As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\border_round_red.png"))
+        'Dim bmp As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\NEC_8041_2017_05_09_午後わてん_.jpg"))
+        With TempImage
+            .Width = bmp.PixelWidth
+            .Height = bmp.PixelHeight
+            .Source = bmp
             .RenderTransform = tg
             .RenderTransformOrigin = New Point(0.5, 0.5)
         End With
         '必要
-        Canvas.SetLeft(TempBorder, 0) : Canvas.SetTop(TempBorder, 0)
+        Canvas.SetLeft(TempImage, 0) : Canvas.SetTop(TempImage, 0)
         Canvas.SetLeft(TempCanvas, 0) : Canvas.SetTop(TempCanvas, 0)
+        Canvas.SetLeft(MyCanvas, 0) : Canvas.SetTop(MyCanvas, 0)
 
-        'TempCanvas.Width = TempBorder.Width
-        'TempCanvas.Height = TempBorder.Height
+
+        'TempCanvas.Width = TempImage.Width
+        'TempCanvas.Height = TempImage.Height
         'TempCanvas.RenderTransform = tg
         'TempCanvas.RenderTransformOrigin = New Point(0.5, 0.5)
 
@@ -121,11 +126,12 @@ Class MainWindow
         b = New Binding With {.Source = sldTop, .Path = New PropertyPath(Slider.ValueProperty)}
         MyThumb1.SetBinding(TopProperty, b)
 
-        'b = New Binding With {.Source = TempBorder, .Path = New PropertyPath(WidthProperty)}
+        'b = New Binding With {.Source = TempImage, .Path = New PropertyPath(WidthProperty)}
         'MyThumb1.SetBinding(WidthProperty, b)
 
-        'b = New Binding With {.Source = TempBorder, .Path = New PropertyPath(HeightProperty)}
+        'b = New Binding With {.Source = TempImage, .Path = New PropertyPath(HeightProperty)}
         'MyThumb1.SetBinding(HeightProperty, b)
+
 
     End Sub
 
@@ -151,7 +157,7 @@ Class MainWindow
 
                                                                         End Sub)
 
-        Dim s As New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
+        Dim s As New Size(TempImage.ActualWidth, TempImage.ActualHeight)
         Dim r1 As Rect = TempCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r2 As Rect = New Rect(0, 0, MyBlueBorder.ActualWidth, MyBlueBorder.ActualHeight)
         Dim r As Rect = Rect.Union(r1, r2)
@@ -185,7 +191,7 @@ Class MainWindow
 
     Private Sub SaveImageMyCanvasDI3改(filePath As String)
         Dim b As Brush = MyCanvas.Background
-        MyBlueBorder.Visibility = Visibility.Hidden '青Borderを非表示
+        'MyBlueBorder.Visibility = Visibility.Hidden '青Borderを非表示
         MyCanvas.Background = Brushes.Transparent '背景色を透明にする
         '背景色を透明にするには再描画が必要
         MyCanvas.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub()
@@ -193,8 +199,8 @@ Class MainWindow
                                                                         End Sub)
 
 
-        Dim s As New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r2 As Rect = New Rect(0, 0, MyBlueBorder.ActualWidth, MyBlueBorder.ActualHeight)
         Dim r As Rect = Rect.Union(r1, r2)
         'MyCanvas全体をbmp画像にする
@@ -216,6 +222,7 @@ Class MainWindow
         'MyCanvasのbmpを使ってDrawImage
         Dim dv As New DrawingVisual
         Using dc As DrawingContext = dv.RenderOpen
+            x = 0 : y = 0
             dc.DrawImage(bmp, New Rect(-x, -y, w, h))
         End Using
 
@@ -232,7 +239,8 @@ Class MainWindow
         Dim rtb As New RenderTargetBitmap(ww, hh, 96, 96, PixelFormats.Pbgra32)
         rtb.Render(dv)
         'bmpをpng画像として保存
-        Call Bitmap2pngFile(rtb, filePath)
+        Clipboard.SetImage(rtb)
+        'Call Bitmap2pngFile(rtb, filePath)
 
         MyCanvas.Background = b '背景色を戻す
         MyBlueBorder.Visibility = Visibility.Visible '青Borderを再表示
@@ -252,8 +260,8 @@ Class MainWindow
                                                                         End Sub)
 
 
-        Dim s As New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r2 As Rect = New Rect(0, 0, MyBlueBorder.ActualWidth, MyBlueBorder.ActualHeight)
         Dim r As Rect = Rect.Union(r1, r2)
         'MyCanvas全体をbmp画像にする
@@ -310,8 +318,8 @@ Class MainWindow
 
     'SaveImageCropped3式を清書
     Private Sub SaveImageCropped3式改(filePath As String)
-        Dim s As New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r2 As Rect = New Rect(0, 0, MyBlueBorder.ActualWidth, MyBlueBorder.ActualHeight)
         Dim r As Rect = Rect.Union(r1, r2)
         Dim bmp As New RenderTargetBitmap(Math.Ceiling(r.Width), Math.Ceiling(r.Height), 96, 96, PixelFormats.Pbgra32)
@@ -346,12 +354,12 @@ Class MainWindow
 
         'クロップ！
         Dim cb As New CroppedBitmap(bmp, cropSize)
-
-        Call Bitmap2pngFile(cb, filePath)
+        Clipboard.SetImage(cb)
+        'Call Bitmap2pngFile(cb, filePath)
     End Sub
 
     Private Sub SaveImageThumb(filePath As String)
-        Dim r As Rect = TempCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)))
+        Dim r As Rect = TempCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(New Size(TempImage.ActualWidth, TempImage.ActualHeight)))
         Dim bmp As New RenderTargetBitmap(Math.Ceiling(r.Width), Math.Ceiling(r.Height), 96, 96, PixelFormats.Pbgra32)
         bmp.Render(TempCanvas)
         Clipboard.SetImage(bmp)
@@ -360,15 +368,15 @@ Class MainWindow
 
     'だいたいOK、あとはサイズの微調整
     Private Sub SaveImageThumbVB(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r2 As Rect = VisualTreeHelper.GetDescendantBounds(MyThumb1)
-        Dim r3 As Point = MyCanvas.TransformToVisual(TempBorder).Transform(New Point(0, 0))
+        Dim r3 As Point = MyCanvas.TransformToVisual(TempImage).Transform(New Point(0, 0))
         Dim r4 As Point = MyCanvas.TransformToVisual(TempCanvas).Transform(New Point(0, 0))
-        Dim r5 As Point = TempBorder.TransformToVisual(MyThumb1).Transform(New Point(0, 0))
+        Dim r5 As Point = TempImage.TransformToVisual(MyThumb1).Transform(New Point(0, 0))
         Dim r6 As Point = MyCanvas.TransformToVisual(MyThumb1).Transform(New Point(0, 0))
         Dim r7 As Point = MyThumb1.TransformToVisual(TempCanvas).Transform(New Point(0, 0))
-        Dim r8 As Point = MyThumb1.TransformToVisual(TempBorder).Transform(New Point(0, 0))
+        Dim r8 As Point = MyThumb1.TransformToVisual(TempImage).Transform(New Point(0, 0))
         Dim r9 As Point = MyThumb1.TransformToVisual(MyCanvas).Transform(New Point(0, 0))
 
         Dim vb As New VisualBrush(MyThumb1)
@@ -392,8 +400,8 @@ Class MainWindow
     End Sub
 
     Private Sub SaveImageThumbVB2(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
 
         Dim vb As New VisualBrush(MyThumb1)
         Dim dv As New DrawingVisual
@@ -407,8 +415,8 @@ Class MainWindow
     End Sub
 
     Private Sub SaveImageThumbVB3(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
 
         Dim xOffset As Double
         Dim yOffset As Double
@@ -447,8 +455,8 @@ Class MainWindow
     'DrawContextのpushTransformで回転させてみる→いまいち
     '中心軸の設定が無視される感じでどんどんズレる
     Private Sub SaveImageThumbVB4(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        'Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        'Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r1 As Rect = TempCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
 
         Dim xOffset As Double
@@ -461,7 +469,7 @@ Class MainWindow
         vWidth = r1.Width
         vHeight = r1.Height
         Dim ro As New RotateTransform(Angle1.Value, 0.5, 0.5)
-        Dim vb As New VisualBrush(TempBorder)
+        Dim vb As New VisualBrush(TempImage)
         'vb.Transform = ro ' TempCanvas.RenderTransform
         RenderOptions.SetEdgeMode(vb, EdgeMode.Aliased)
         vb.RelativeTransform = New RotateTransform(7.7, 0.5, 0.5)
@@ -479,8 +487,8 @@ Class MainWindow
     End Sub
 
     Private Sub SaveImageThumbVB5(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         'Dim r1 As Rect = TempCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim hanbun As Double = r1.Width / 2
         Dim xOffset As Double = r1.X - Fix(r1.X)
@@ -502,22 +510,86 @@ Class MainWindow
 
     'TempCanvasをDrawImage、これはムリ、回転角度が大きくなるとズレていって修正もできないっぽい
     Private Sub SaveImageThumbDrawImage(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        Dim r1 As Rect = TempBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim tBmp As New RenderTargetBitmap(r1.Width, r1.Height, 96, 96, PixelFormats.Pbgra32)
         tBmp.Render(TempCanvas)
         Clipboard.SetImage(tBmp)
 
     End Sub
 
+    'MyCanvasのVisualBrushで全体をDrawRectangleして
+    'MyCanvasのVisualBrushをDrawingVisualのDrawingContextのDrawRectangleに使う
+    'それをRenderTargetBitmapでRenderして画像作成
+    'それをDrawingVisualのDrawingContextのDrawImageに使う
+    'このときに適切なOffsetとサイズを指定する
+    'RenderTargetBitmapでRenderしてできあがり
+    'Offsetやサイズ指定は単純なCIntで四捨五入な感じにしているけどほぼ問題ない
+    '細かく指定するなら0.53と0.54の間にしきい値があるみたい、またDPIも関係しているかも
+    Private Sub SaveImageMyCanvasVBDRect(filePath As String)
+        '再描画、MyCanvasのサイズが必要になるので再描画
+        MyCanvas.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub()
+
+                                                                        End Sub)
+        Dim vb As New VisualBrush(MyCanvas)
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim r2 As Rect = MyBlueBorder.TransformToVisual(MyCanvas).TransformBounds(New Rect(GetRect(MyBlueBorder).Size))
+        Dim r As Rect = Rect.Union(r1, r2)
+        Dim tr As Rect = VisualTreeHelper.GetDescendantBounds(MyCanvas) 'test
+
+        'MyCanvasの画像作成
+        Dim vWidth As Double = Math.Ceiling(r.Width)
+        Dim vHeight As Double = Math.Ceiling(r.Height)
+        Dim dv As New DrawingVisual()
+        Using dc As DrawingContext = dv.RenderOpen
+            dc.DrawRectangle(vb, Nothing, New Rect(0, 0, vWidth, vHeight))
+        End Using
+        Dim iBmp As New RenderTargetBitmap(vWidth, vHeight, 96, 96, PixelFormats.Pbgra32)
+        iBmp.Render(dv)
+
+        '画像をOffsetとサイズ指定してDrawImage
+        Dim xOffset As Integer = r1.X 'たぶん四捨五入
+        Dim yOffset As Integer = r1.Y
+        Using dc As DrawingContext = dv.RenderOpen
+            dc.DrawImage(iBmp, New Rect(-xOffset, -yOffset, vWidth, vHeight))
+            '↑↓は全く同じ結果
+            'dc.DrawRectangle(New ImageBrush(iBmp), Nothing, New Rect(-Fix(r1.X), -Fix(r1.Y), vWidth, vHeight))
+        End Using
+
+        'Dim rtb As New RenderTargetBitmap(Math.Ceiling(r1.Width) + 1, Math.Ceiling(r1.Height) + 1, 96, 96, PixelFormats.Pbgra32)
+        Dim xf As Integer = CInt(r1.X + r1.Width) - xOffset
+        Dim yf As Integer = CInt(r1.Y + r1.Height) - yOffset
+        Dim rtb As New RenderTargetBitmap(xf + 1, yf + 1, 96, 96, PixelFormats.Pbgra32)
+        rtb.Render(dv)
+        Clipboard.SetImage(rtb) '確認用
+        'Call Bitmap2pngFile(rtb, filePath)
+    End Sub
+
+    'あれ？これ良さそう？
+    Private Sub test()
+        Dim r As Rect = VisualTreeHelper.GetDescendantBounds(MyThumb1)
+        Dim vb As New VisualBrush(MyThumb1)
+        Dim dv As New DrawingVisual
+        Using dc As DrawingContext = dv.RenderOpen
+            dc.DrawRectangle(vb, Nothing, New Rect(r.X - Fix(r.X), r.Y - Fix(r.Y), r.Width, r.Height))
+
+        End Using
+        Dim bmp As New RenderTargetBitmap(r.Width + 1, r.Height + 1, 96, 96, PixelFormats.Pbgra32)
+        bmp.Render(dv)
+        Clipboard.SetImage(bmp)
+    End Sub
+
+    'ここまで単独Thumbを画像ファイル保存
+
 
 
 
     'MyCanvas全てを画像ファイルにする、OK
     Private Sub SaveAllImage(filePath As String)
-        Dim s As Size = New Size(TempBorder.ActualWidth, TempBorder.ActualHeight)
-        'Dim s As Size = New Size(100, 100) '(TempBorder.Width, TempBorder.Height)
-        Dim r1 As Rect = TempCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        'Dim s As Size = New Size(100, 100) '(TempImage.Width, TempImage.Height)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
         Dim r2 As Rect = New Rect(0, 0, 10, 10)
         Dim r As Rect = Rect.Union(r1, r2)
         Dim bmp As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
@@ -535,6 +607,7 @@ Class MainWindow
     Private Sub SaveImage_Click(sender As Object, e As RoutedEventArgs)
         Dim angle As String = Angle1.Value.ToString
         Dim filePath As String = GetNowToString() & "_" & angle & "度_"
+        Call FixMyCanvasSize()
 
 
         'DrawingImage式
@@ -553,7 +626,9 @@ Class MainWindow
 
         'test
         'Call SaveImageThumbDrawImage(filePath & "SaveImageThumbDrawImage.png") 'ムリだった
-        Call SaveImageMyCanvasDI4(filePath & "SaveImageMyCanvasDI4.png") 'ムリだった
+        'Call SaveImageMyCanvasDI4(filePath & "SaveImageMyCanvasDI4.png") '途中
+        'Call SaveImageMyCanvasVBDRect(filePath & "SaveImageMyCanvasVBDRect.png") '途中
+        Call test()
 
         ''アンチエイリアスありのとき用
         'Call SaveImageMyCanvasVB9(filePath & "SaveImageMyCanvasVB9.png")
@@ -577,6 +652,7 @@ Class MainWindow
         AddHandler btnTextUpdate.Click, AddressOf TextUpdate_Click
         AddHandler btnSave.Click, AddressOf SaveImage_Click
         AddHandler MyThumb1.DragDelta, AddressOf MyThumb1_DragDelta
+        AddHandler btnFixMyCanvasSize.Click, AddressOf FixMyCanvasSize
 
         Call SetTextBlockBinding(tbMyCanvasEdgeMode, MyCanvas, "MyCanvas")
         Call SetTextBlockBinding(tbTempCanvasEdgeMode, TempCanvas, "TempCanvas")
@@ -589,21 +665,22 @@ Class MainWindow
         RenderOptions.SetEdgeMode(MyCanvas, EdgeMode.Aliased) '要る
         RenderOptions.SetEdgeMode(TempCanvas, EdgeMode.Aliased) '要る
         'RenderOptions.SetEdgeMode(MyThumb1, EdgeMode.Aliased) '多分いらない
-        'RenderOptions.SetEdgeMode(TempBorder, EdgeMode.Aliased)’多分いらない
+        'RenderOptions.SetEdgeMode(TempImage, EdgeMode.Aliased) '多分いらない
 
         '下2つはあまり意味ないかも、特にSnapのほう
         'MyCanvas.UseLayoutRounding = True
         'MyThumb1.UseLayoutRounding = True
         'TempCanvas.UseLayoutRounding = True
-        'TempBorder.UseLayoutRounding = True
+        'TempImage.UseLayoutRounding = True
 
         'MyCanvas.SnapsToDevicePixels = True
         'MyThumb1.SnapsToDevicePixels = True
-        'TempBorder.SnapsToDevicePixels = True
+        'TempImage.SnapsToDevicePixels = True
         'TempCanvas.SnapsToDevicePixels = True
     End Sub
     Private Sub Window1_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Call TextUpdate()
+        Call FixMyCanvasSize()
     End Sub
 
     Private Sub btnEdgeMode_Click(sender As Object, e As RoutedEventArgs)
@@ -624,5 +701,18 @@ Class MainWindow
     Private Sub MyThumb1_DragDelta(sender As Object, e As DragDeltaEventArgs)
         Canvas.SetLeft(sender, Canvas.GetLeft(sender) + e.HorizontalChange)
         Canvas.SetTop(sender, Canvas.GetTop(sender) + e.VerticalChange)
+    End Sub
+    Private Sub FixMyCanvasSize()
+        Dim r0 As Rect = VisualTreeHelper.GetDescendantBounds(MyCanvas)
+        Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(GetRect(TempImage).Size))
+        Dim r2 As Rect = New Rect(0, 0, MyBlueBorder.ActualWidth, MyBlueBorder.ActualHeight)
+        Dim r As Rect = Rect.Union(r1, r2)
+        MyCanvas.Width = r.Width
+        MyCanvas.Height = r.Height
+        tbMyCanvasSize.Text = $"{r.X:0.00}, {r.Y:0.00}, {r.Width:0.00}, {r.Height:0.00}"
+    End Sub
+
+    Private Sub btnFixMyCanvasSize_Click(sender As Object, e As RoutedEventArgs)
+        Call FixMyCanvasSize()
     End Sub
 End Class
