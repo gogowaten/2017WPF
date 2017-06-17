@@ -5,12 +5,13 @@ Public Class ExThumb
     Inherits Thumb
     Implements System.ComponentModel.INotifyPropertyChanged
 
-    Private RootCanvas As Canvas
+    Public RootCanvas As Canvas
     'Private MyElement As FrameworkElement
     'Private ParentPanel As Panel 'MyCanvas
     Private ReadOnly MyRotateTransform As New RotateTransform
     Public ReadOnly MyScaleTransform As New ScaleTransform
     Public ReadOnly MySkewTransform As New SkewTransform
+
 
     Private MyImage As Image
     Private MyBorder As Border
@@ -35,6 +36,8 @@ Public Class ExThumb
             Canvas.SetLeft(Me, value)
             'Call UpdateRect() '見た目の座標取得
             Call MyPropertyChanged()
+            Dim h = Me.Height
+            Dim h2 = Me.OutRect.Height
         End Set
     End Property
     Private Property _ExInTop As Double
@@ -197,8 +200,8 @@ Public Class ExThumb
         Dim img As New FrameworkElementFactory(GetType(Image), "TempImage")
         Dim b As New FrameworkElementFactory(GetType(Border), "TempBorder")
         Dim ct As New ControlTemplate(GetType(Thumb))
-        c.AppendChild(img)
-        c.AppendChild(b)
+        'c.AppendChild(img)
+        'c.AppendChild(b)
         ct.VisualTree = c
         Return ct
     End Function
@@ -215,7 +218,9 @@ Public Class ExThumb
             .RenderTransformOrigin = New Point(0.5, 0.5)
             .RenderTransform = CreateRenderTransform(scX, scY, skX, skY, angle)
             '.Background = Brushes.Transparent
-            .Background = Brushes.Black
+            '.Background = Brushes.Black
+            .Width = elm.Width '要る？
+            .Height = elm.Height '要る？
         End With
 
 
@@ -243,6 +248,7 @@ Public Class ExThumb
         End Select
         Width = elm.Width : Height = elm.Height
 
+        'Me.Background = Brushes.Red
 
         Call SetLocate(x, y)
         ExSize = New Size(elm.Width, elm.Height)

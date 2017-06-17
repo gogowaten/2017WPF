@@ -97,8 +97,8 @@ Class MainWindow
         Dim ct As ControlTemplate = MyThumb1.Template
         TempImage = ct.FindName("TempImage", MyThumb1)
         TempCanvas = ct.FindName("TempCanvas", MyThumb1)
-        Dim bmp As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\border_round_red.png"))
-        'Dim bmp As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\NEC_8041_2017_05_09_午後わてん_.jpg"))
+        'Dim bmp As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\border_round_red.png"))
+        Dim bmp As New BitmapImage(New Uri("D:\ブログ用\テスト用画像\NEC_8041_2017_05_09_午後わてん_.jpg"))
         With TempImage
             .Width = bmp.PixelWidth
             .Height = bmp.PixelHeight
@@ -628,7 +628,7 @@ Class MainWindow
         'Call SaveImageThumbDrawImage(filePath & "SaveImageThumbDrawImage.png") 'ムリだった
         'Call SaveImageMyCanvasDI4(filePath & "SaveImageMyCanvasDI4.png") '途中
         'Call SaveImageMyCanvasVBDRect(filePath & "SaveImageMyCanvasVBDRect.png") '途中
-        Call test()
+        'Call test()
 
         ''アンチエイリアスありのとき用
         'Call SaveImageMyCanvasVB9(filePath & "SaveImageMyCanvasVB9.png")
@@ -637,6 +637,13 @@ Class MainWindow
 
 
         'Call SaveAllImage(filePath & "AllImage.png") '全体保存OK
+
+        'test
+        Dim r As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(New Size(TempImage.Width, TempImage.Height)))
+        Dim rtb As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
+        rtb.Render(TempCanvas)
+        Dim str As String = GetNowToString() & ".png"
+        Call Bitmap2pngFile(rtb, str)
     End Sub
 
     Private Sub SetTextBlockBinding(tb As TextBlock, t As UIElement, name As String)

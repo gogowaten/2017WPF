@@ -9,6 +9,11 @@ Class MainWindow
         AddHandler btnCheck.Click, AddressOf BtnCheck_Click
         AddHandler BtnFixMyThumbLocate.Click, AddressOf BtnFixMyThumbLocate_Click
         AddHandler btnFixMyCanvasSize.Click, AddressOf btnFixMyCanvasSize_Click
+        AddHandler btnSave.Click, AddressOf btnSave_Click
+
+        Dim myB1 As New Border With {.Width = 100, .Height = 30, .Background = Brushes.Red}
+        Call AddElementToMyCanvas(myB1, 10, 10)
+
 
         '縁取り
         '枠
@@ -96,7 +101,7 @@ Class MainWindow
             .Width = formattedText.Width,
             .Height = formattedText.Height,
             .Background = dBrush}
-        Call AddElementToMyCanvas(bo, 10, 10)
+        Call AddElementToMyCanvas(bo, 10, 100)
 
         Dim bo0 As New Border With {
             .Width = textGeometry.Bounds.Width,
@@ -236,6 +241,10 @@ Class MainWindow
         BindingOperations.SetBinding(MyTextBlock6, TextBlock.TextProperty, b)
         BindingOperations.SetBinding(MyTextBlock7, TextBlock.TextProperty, New Binding(NameOf(ExThumb.OutRect)))
         BindingOperations.SetBinding(MyTextBlock4, TextBlock.TextProperty, New Binding(NameOf(ExThumb.OutLocate)))
+        'b = New Binding With {.Path = New PropertyPath(NameOf(MyCanvas.RenderSize)),
+        '    .StringFormat = "Size = {0:0.00}"}
+        'BindingOperations.SetBinding(tbMyCanvasSize, TextBlock.TextProperty, b)
+
     End Sub
 
     Private Sub BtnCheck_Click(sender As Object, e As RoutedEventArgs)
@@ -332,8 +341,12 @@ Class MainWindow
     End Sub
     'MyCanvasサイズ修正
     Private Sub SetMyCanvasSize()
-        Dim r As Rect = VisualTreeHelper.GetDescendantBounds(MyCanvas)
+        Dim r As Rect = New Rect ' VisualTreeHelper.GetDescendantBounds(MyCanvas)
+        For Each c As ExThumb In tList
+            r = Rect.Union(r, c.OutRect)
+        Next
         MyCanvas.Width = r.Width : MyCanvas.Height = r.Height
+        tbMyCanvasSize.Text = $"{NameOf(MyCanvas)} Size = {r.Width}, {r.Height}"
     End Sub
     Private Sub btnFixMyCanvasSize_Click(sender As Object, e As RoutedEventArgs)
         Call SetMyCanvasSize()
@@ -349,7 +362,149 @@ Class MainWindow
 
     End Sub
 
-    Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
+    'ファイルセーブ
+    'MyCanvas全てを画像ファイルにする、OK
+    Private Sub SaveAllImage(filePath As String)
+        'Dim s As Size = New Size(TempImage.ActualWidth, TempImage.ActualHeight)
+        'Dim s As Size = New Size(100, 100) '(TempImage.Width, TempImage.Height)
+        'Dim r1 As Rect = TempImage.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        'Dim r2 As Rect = New Rect(0, 0, 10, 10)
+        Dim r As Rect = VisualTreeHelper.GetDescendantBounds(MyCanvas) ' Rect.Union(r1, r2)
+        Dim bmp As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
+        bmp.Render(MyCanvas)
+        Call Bitmap2pngFile(bmp, filePath)
+    End Sub
+
+    '選択画像だけ保存
+    Private Sub SaveImageMyCanvasVB9(filePath As String)
+        Dim b As Brush = MyCanvas.Background
+        '非表示
+        Call InVisible()
+        MyCanvas.Background = Brushes.Transparent '背景色を透明にする
+
+        '指定した背景色をここで反映させるには再描画が必要
+        MyCanvas.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub()
+
+                                                                        End Sub)
+
+        Dim s As New Size(NowExThumb1.OutRect.Width, NowExThumb1.OutRect.Height)
+        Dim r1 As Rect = NowExThumb1.OutRect ' NowExThumb1.TransformToVisual(MyCanvas).TransformBounds(New Rect(s))
+        'Dim r2 As Rect = NowExThumb1.TransformToVisual(MyCanvas).TransformBounds(New Rect(New Size(NowExThumb1.Width, NowExThumb1.Height)))
+        'Dim r2 As Rect = New Rect(0, 0, MyBlueBorder.ActualWidth, MyBlueBorder.ActualHeight)
+        'Dim r As Rect = Rect.Union(r1, r2)
+        Dim r As Rect = VisualTreeHelper.GetDescendantBounds(MyCanvas)
+
+        'ブラシで塗るOffset位置
+        Dim xOffset As Integer = -Fix(r1.X)
+        Dim yOffset As Integer = -Fix(r1.Y)
+
+        Dim dv As New DrawingVisual
+        Using dc As DrawingContext = dv.RenderOpen
+            Dim vb As New VisualBrush(MyCanvas)
+            vb.Stretch = Stretch.None
+            dc.DrawRectangle(vb, Nothing, New Rect(New Point(xOffset, yOffset), r.Size))
+        End Using
+        '
+        'RenderTargetBitmapの(サイズ)
+        Dim migi As Integer = Math.Ceiling(r1.X + r1.Width)
+        Dim sita As Integer = Math.Ceiling(r1.Y + r1.Height)
+        Dim wRender As Integer = migi + xOffset
+        Dim hRender As Integer = sita + yOffset
+
+        'RenderTargetBitmap
+        Dim rtb As New RenderTargetBitmap(wRender, hRender, 96, 96, PixelFormats.Pbgra32)
+        rtb.Render(dv)
+
+        MyCanvas.Background = b '背景色を戻す
+        '再表示
+        Call InVisibleRetrun()
+        Call Bitmap2pngFile(rtb, filePath)
+    End Sub
+    Private Sub SaveImage1(filePath As String)
+        Dim bmp As New RenderTargetBitmap(NowExThumb1.OutRect.Width, NowExThumb1.OutRect.Height, 96, 96, PixelFormats.Pbgra32)
+        bmp.Render(NowExThumb1)
+        Call Bitmap2pngFile(bmp, filePath)
 
     End Sub
+
+    Private Sub Bitmap2pngFile(bmp As BitmapSource, filePath As String)
+        Dim enc As New PngBitmapEncoder
+        enc.Frames.Add(BitmapFrame.Create(bmp))
+        Using fs As New IO.FileStream(filePath, IO.FileMode.Create)
+            enc.Save(fs)
+        End Using
+    End Sub
+    '自分以外を非表示
+    Private Sub InVisible()
+        For Each c As ExThumb In tList
+            If Not c.Equals(NowExThumb1) Then
+                c.Visibility = Visibility.Hidden
+            End If
+        Next
+    End Sub
+    '非表示を戻す
+    Private Sub InVisibleRetrun()
+        For Each c As ExThumb In tList
+            If c.Visibility = Visibility.Hidden Then
+                c.Visibility = Visibility.Visible
+            End If
+        Next
+    End Sub
+
+    '現在日時を文字列に変換
+    Private Function GetNowToString() As String
+        Dim str As String = Now.ToString
+        str = Replace(str, "/", "")
+        str = Replace(str, ":", "")
+        str = Replace(str, " ", "_")
+        Return str
+    End Function
+    Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs)
+        Dim str As String = GetNowToString() & ".png"
+        'Call SaveAllImage(str)
+        'Call SaveImageMyCanvasVB9(str)
+        'Call SaveImage1(str)
+        '--
+        'Dim r As Rect = myB1.TransformToVisual(myC1).TransformBounds(New Rect(New Size(myB1.Width, myB1.Height)))
+
+        ''Dim bmp As New RenderTargetBitmap(myB1.Width, myB1.Height, 96, 96, PixelFormats.Pbgra32)
+        ''bmp.Render(myB1)
+        'Dim tf As GeneralTransform = myB1.RenderTransform
+        ''Dim vb As New VisualBrush(myB1) With {.Stretch = Stretch.None, .RelativeTransform = tf}
+        'Dim vb As New VisualBrush(myB1) With {.Stretch = Stretch.None}
+        'Dim dv As New DrawingVisual
+        'Using dc As DrawingContext = dv.RenderOpen
+        '    dc.DrawRectangle(vb, Nothing, New Rect(New Size(r.Width, r.Height)))
+        '    'dc.PushTransform(tf) '順番が大切、上と逆になると期待はずれになる
+        'End Using
+        'Dim bmp As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
+        'bmp.Render(dv)
+
+        'Call Bitmap2pngFile(bmp, str)
+        '--
+        Dim r1 = NowExThumb1.RenderTransform
+        Dim r2 = NowExThumb1.RootCanvas.RenderTransform
+        Dim r3 = NowExThumb1.ExElement.RenderTransform
+        'Dim r4 As New RotateTransform(30, 0.5, 0.5)
+
+        Dim r As Rect = NowExThumb1.RootCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(New Size(NowExThumb1.Width, NowExThumb1.Height)))
+        Dim vb As New VisualBrush(NowExThumb1.RootCanvas) With {.Stretch = Stretch.None}
+        Dim dv As New DrawingVisual
+        Using dc As DrawingContext = dv.RenderOpen
+            dc.DrawRectangle(vb, Nothing, New Rect(New Size(r.Width, r.Height)))
+            'dc.PushTransform(NowExThumb1.RootCanvas.RenderTransform)
+            'dc.PushTransform(r4)
+        End Using
+        Dim bmp As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
+        bmp.Render(dv)
+        Call Bitmap2pngFile(bmp, str)
+
+        '-0-
+        'Dim r As Rect = NowExThumb1.RootCanvas.TransformToVisual(MyCanvas).TransformBounds(New Rect(New Size(NowExThumb1.Width, NowExThumb1.Height)))
+        'Dim rtb As New RenderTargetBitmap(r.Width, r.Height, 96, 96, PixelFormats.Pbgra32)
+        'rtb.Render(NowExThumb1.RootCanvas)
+        'Call Bitmap2pngFile(rtb, str)
+
+    End Sub
+
 End Class

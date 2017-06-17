@@ -49,7 +49,18 @@
         <!--<Thumb Name="MyThumb1" Width="100" Height="100" Canvas.Left="50" Canvas.Top="50"/>-->
         <!--<Thumb Name="MyBlueBorder" Width="100" Height="30" Background="Blue" Visibility="Visible" Canvas.Left="0" Canvas.Top="0"/>-->
         <!--<local:ExThumb x:Name="MyExThumb1" Width="100" Height="100" Background="Aqua"/>-->
-        
+        <!--<Canvas Name="myC1" Canvas.Left="50" Canvas.Top="20">
+          <Border Name="myB1" Width="100" Height="30" Background="Red" RenderTransformOrigin="0.5,0.5" >
+            <Border.RenderTransform>
+              <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform Angle="20"/>
+                <TranslateTransform/>
+              </TransformGroup>
+            </Border.RenderTransform>
+          </Border>          
+        </Canvas>-->
       </Canvas>
     </ScrollViewer>
   </Grid>
