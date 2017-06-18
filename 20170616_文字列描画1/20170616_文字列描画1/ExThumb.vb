@@ -1,4 +1,10 @@
-﻿Imports System.ComponentModel
+﻿'ExThumb
+'┗ControlTemplate
+'   ┗Canvas 変形
+
+
+
+Imports System.ComponentModel
 Imports System.Windows.Controls.Primitives
 
 Public Class ExThumb
@@ -8,7 +14,7 @@ Public Class ExThumb
     Public RootCanvas As Canvas
     'Private MyElement As FrameworkElement
     'Private ParentPanel As Panel 'MyCanvas
-    Private ReadOnly MyRotateTransform As New RotateTransform
+    'Private ReadOnly MyRotateTransform As New RotateTransform
     Public ReadOnly MyScaleTransform As New ScaleTransform
     Public ReadOnly MySkewTransform As New SkewTransform
 
@@ -134,33 +140,35 @@ Public Class ExThumb
     Public Property ExSize As Size '要る？
 
 
-    ''回転角度、DependencyProperty依存プロパティ
-    'Public Shared ReadOnly Property AngleProperty As DependencyProperty =
-    '    DependencyProperty.Register("Angle", GetType(Double), GetType(ExThumb))
-    'Public Property Angle As Double
-    '    Get
-    '        Return GetValue(AngleProperty)
-    '    End Get
-    '    Set(value As Double)
-    '        SetValue(AngleProperty, value)
-    '        MyRotateTransform.Angle = value
-    '    End Set
-    'End Property
-    Private Property _AngleNotify As Double
-    Public Property AngleNotify As Double
+    '回転角度、DependencyProperty依存プロパティ
+    Public Shared ReadOnly Property AngleDependencyProperty As DependencyProperty =
+        DependencyProperty.Register(NameOf(AngleDependency), GetType(Double), GetType(ExThumb))
+    Public Property AngleDependency As Double
         Get
-            Return _AngleNotify
+            Return GetValue(AngleDependencyProperty)
         End Get
         Set(value As Double)
-            _AngleNotify = value
-            Call MyPropertyChanged("AngleNotify")
-            MyRotateTransform.Angle = value
-            Call UpdateRect()
-            'Call SetGapLocate()
+            SetValue(AngleDependencyProperty, value)
         End Set
     End Property
 
+    '通知プロパティ→依存プロパティに移行した
+    'Private Property _AngleNotify As Double
+    'Public Property AngleNotify As Double
+    '    Get
+    '        Return _AngleNotify
+    '    End Get
+    '    Set(value As Double)
+    '        _AngleNotify = value
+    '        Call MyPropertyChanged("AngleNotify")
+    '        MyRotateTransform.Angle = value
+    '        Call UpdateRect()
+    '        'Call SetGapLocate()
+    '    End Set
+    'End Property
+
     '見た目のRectを取得、実行するのは変形させたときと移動させたとき
+
     Public Sub UpdateRect()
         'Dim r As Rect = Me.TransformToVisual(Me.Parent).TransformBounds(New Rect(New Size(Me.Width, Me.Height)))
         If Me.Parent Is Nothing Then Exit Sub
@@ -226,8 +234,6 @@ Public Class ExThumb
 
 
 
-        'AngleNotify = angle
-        'MyRotateTransform.Angle = angle
 
         Dim t = elm.GetType
         MyType = t
@@ -252,14 +258,11 @@ Public Class ExThumb
 
         Call SetLocate(x, y)
         ExSize = New Size(elm.Width, elm.Height)
+
+        Call SetMyBinding()
         'binding
         'Dim b As New Binding With {.Source = Me, .Path = New PropertyPath(Window.LeftProperty), .Mode = BindingMode.TwoWay}
         'BindingOperations.SetBinding(Me, Canvas.LeftProperty, b)
-        'Dim b As New Binding With {.Source = Me, .Path = New PropertyPath(ExThumb.AngleProperty), .Mode = BindingMode.TwoWay}
-        'BindingOperations.SetBinding(Me.MyRotateTransform, RotateTransform.AngleProperty, b)
-
-        Dim b As New Binding(NameOf(AngleNotify)) '"AngleNotify")
-        BindingOperations.SetBinding(MyRotateTransform, RotateTransform.AngleProperty, b)
 
         'BindingOperations.SetBinding(Me, Canvas.LeftProperty, New Binding(NameOf(ExInLeft)))
 
@@ -267,7 +270,13 @@ Public Class ExThumb
 
 
     End Sub
-
+    '各種バインディング
+    Private Sub SetMyBinding()
+        ''回転角度
+        'Dim b As Binding
+        'b = New Binding With {.Source = Me, .Path = New PropertyPath(AngleDependencyProperty)}
+        'BindingOperations.SetBinding(MyRotateTransform, RotateTransform.AngleProperty, b)
+    End Sub
     Private Sub MyIni()
         Me.Template = CreateTemplate()
         Me.ApplyTemplate()
@@ -278,12 +287,19 @@ Public Class ExThumb
         Dim tg As New TransformGroup
         MyScaleTransform.ScaleX = scX : MyScaleTransform.ScaleY = scY
         MySkewTransform.AngleX = skX : MySkewTransform.AngleY = skY
-        MyRotateTransform.Angle = angle
+        'MyRotateTransform.Angle = angle
+        Dim MyRotateTransform As New RotateTransform(angle)
         With tg.Children
             .Add(MyScaleTransform)
             .Add(MySkewTransform)
             .Add(MyRotateTransform)
         End With
+
+        'バインディング
+        Dim b As Binding
+        b = New Binding With {.Source = Me, .Path = New PropertyPath(AngleDependencyProperty)}
+        BindingOperations.SetBinding(MyRotateTransform, RotateTransform.AngleProperty, b)
+
         Return tg
     End Function
 

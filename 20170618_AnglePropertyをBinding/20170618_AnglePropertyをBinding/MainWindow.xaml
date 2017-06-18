@@ -1,0 +1,22 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170618_AnglePropertyをBinding"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="210" Width="400">
+  <Grid Margin="10,50,10,0">
+    <StackPanel Orientation="Horizontal">
+      <StackPanel Width="200">
+        <TextBlock Name="tbAngle" Text="tbAngle"/>
+        <TextBlock Text="{Binding ElementName=sldAngle, Path=Value,
+          StringFormat=SliderValue \= 0}"/>
+        <Slider Name="sldAngle"  Value="0" Maximum="360" SnapsToDevicePixels="True"
+                TickFrequency="1" LargeChange="1" IsSnapToTickEnabled="True"/>
+        <Button Name="btnAngle" Content="Angle+10"/>
+      </StackPanel>
+      <Canvas Name="MyCanvas"/>
+    </StackPanel>
+  </Grid>
+</Window>
