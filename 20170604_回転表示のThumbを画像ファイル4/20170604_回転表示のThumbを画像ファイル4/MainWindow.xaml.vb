@@ -644,15 +644,7 @@ Class MainWindow
         rtb.Render(TempCanvas)
         Dim str As String = GetNowToString() & ".png"
         Call Bitmap2pngFile(rtb, str)
-        'test
-        'test2
-        'test3
-        'test4
-        'test5
-        'test6-2
-        'test1-7
-        'test2-6
-        'test2-2-1
+
 
     End Sub
 
