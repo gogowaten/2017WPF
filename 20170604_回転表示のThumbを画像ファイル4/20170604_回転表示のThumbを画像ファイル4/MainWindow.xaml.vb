@@ -645,6 +645,10 @@ Class MainWindow
         Dim str As String = GetNowToString() & ".png"
         Call Bitmap2pngFile(rtb, str)
         'test
+        'test2
+        'test3
+        'test4
+
     End Sub
 
     Private Sub SetTextBlockBinding(tb As TextBlock, t As UIElement, name As String)
