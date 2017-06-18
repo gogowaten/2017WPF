@@ -644,6 +644,7 @@ Class MainWindow
         rtb.Render(TempCanvas)
         Dim str As String = GetNowToString() & ".png"
         Call Bitmap2pngFile(rtb, str)
+        'test
     End Sub
 
     Private Sub SetTextBlockBinding(tb As TextBlock, t As UIElement, name As String)

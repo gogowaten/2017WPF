@@ -218,7 +218,7 @@ Public Class ExThumb
             .RenderTransformOrigin = New Point(0.5, 0.5)
             .RenderTransform = CreateRenderTransform(scX, scY, skX, skY, angle)
             '.Background = Brushes.Transparent
-            '.Background = Brushes.Black
+            .Background = Brushes.Black
             .Width = elm.Width '要る？
             .Height = elm.Height '要る？
         End With
