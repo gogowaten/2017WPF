@@ -1,4 +1,8 @@
-﻿Class MainWindow
+﻿'WPF、AnglePropertyと作成した依存プロパティをバインディング - 午後わてんのブログ - Yahoo!ブログ
+'https://blogs.yahoo.co.jp/gogowaten/14979329.html
+
+
+Class MainWindow
     Private ActBorder As Class1
 
     '今の回転角度に+10する

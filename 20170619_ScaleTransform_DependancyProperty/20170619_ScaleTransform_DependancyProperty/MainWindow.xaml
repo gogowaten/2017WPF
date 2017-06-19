@@ -1,0 +1,33 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170619_ScaleTransform_DependancyProperty"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="250" Width="450">
+  <Grid Margin="10,30,10,0">
+    <StackPanel Orientation="Horizontal">      
+      <StackPanel Width="200">
+        
+        <TextBlock Name="tbScaleX"/>
+        <TextBlock Text="{Binding ElementName=sldXscale, Path=Value, StringFormat=SliderValue \= 0.0}"/>
+        <Slider Name="sldXscale" Value="1" Maximum="3" Minimum="0.1" 
+                SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>
+        
+        <Border Height="1" Background="Red" Margin="0,5"/>
+        
+        <TextBlock Name="tbScaleY"/>
+        <TextBlock Text="{Binding ElementName=sldYscale, Path=Value, StringFormat=SliderValue \= 0.0}"/>
+        <Slider Name="sldYscale" Value="1" Maximum="3" Minimum="0.1"
+                SnapsToDevicePixels="True" TickFrequency="0.1" LargeChange="0.1" IsSnapToTickEnabled="True"/>        
+        <CheckBox Name="cbXY" Content="XとYを同期する(XにYを合わせる)"/>
+        <Button Name="btXadd" Content="ScaleX + 1"/>
+        <Button Name="btXsub" Content="ScaleX - 1"/>
+      </StackPanel>      
+      <StackPanel>
+        <Canvas Name="MyCanvas"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>
