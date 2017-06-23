@@ -1,0 +1,29 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170622_ブラシとMultiBinding_Converter2"
+        mc:Ignorable="d"
+         Title="MainWindow" Height="280" Width="300">
+  <Grid Margin="5,30,5,0">
+    <StackPanel>
+      <Border Name="MyBorder" Width="200" Height="40" Margin="5"/>
+      <Button Name="btSetColor1" Content="SolidColorBrush(255, 180, 50)" Margin="5"/>
+      <Button Name="btSetColor2" Content="BrushesAlicBlue" Margin="5"/>
+      <!--<Button Name="btSetColor3" Content="Red=200"/>-->      
+      <DockPanel>
+        <TextBlock Text="{Binding ElementName=sldR, Path=Value, StringFormat=R \= 000}" Margin="5"/>
+      <Slider Name="sldR" Minimum="0" Maximum="255" SnapsToDevicePixels="True" TickFrequency="1" IsMoveToPointEnabled="True" Margin="5"/>
+      </DockPanel>
+      <DockPanel>
+        <TextBlock Text="{Binding ElementName=sldG, Path=Value, StringFormat=G \= 000}" Margin="5"/>
+        <Slider Name="sldG" Minimum="0" Maximum="255" SnapsToDevicePixels="True" TickFrequency="1" IsMoveToPointEnabled="True" Margin="5"/>
+      </DockPanel>
+      <DockPanel>
+        <TextBlock Text="{Binding ElementName=sldB, Path=Value, StringFormat=B \= 000}" Margin="5"/>
+        <Slider Name="sldB" Minimum="0" Maximum="255" SnapsToDevicePixels="True" TickFrequency="1" IsMoveToPointEnabled="True" Margin="5"/>
+      </DockPanel>      
+    </StackPanel>
+  </Grid>
+</Window>
