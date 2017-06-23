@@ -1,4 +1,8 @@
-﻿Imports System.Globalization
+﻿'WPF、Borderの背景色(Background.Brush)とスライダーの値を双方向バインディング？ ( ソフトウェア ) - 午後わてんのブログ - Yahoo!ブログ
+'https://blogs.yahoo.co.jp/gogowaten/14987741.html
+
+
+Imports System.Globalization
 
 'RGB各色の値をSolidColorBrushに変換する
 Public Class MyConverterRGB2Brush

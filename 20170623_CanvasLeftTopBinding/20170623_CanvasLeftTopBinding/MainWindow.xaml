@@ -1,0 +1,32 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170623_CanvasLeftTopBinding"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="200" Width="300">
+  <Grid>
+    <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
+      <StackPanel Width="100">
+        <TextBlock Name="tbCanvasLeft"/>
+        <TextBlock Text="{Binding ElementName=sldCanvasLeft, Path=Value, StringFormat=SliderValue \= 0}"/>
+        <Slider Name="sldCanvasLeft" Value="0" Maximum="100" Minimum="0"
+                 TickFrequency="1" IsSnapToTickEnabled="True" IsMoveToPointEnabled="True"/>
+        <TextBlock Name="tbCanvasTop"/>
+        <TextBlock Text="{Binding ElementName=sldCanvasTop, Path=Value, StringFormat=SliderValue \= 0}"/>
+        <Slider Name="sldCanvasTop" Value="0" Maximum="100" Minimum="0"
+                 TickFrequency="1" IsSnapToTickEnabled="True" IsMoveToPointEnabled="True"/>
+        <Button Name="btAdd10" Content="右へ10"/>
+        <Button Name="btSub10" Content="左へ10"/>
+
+      </StackPanel>
+      <StackPanel>
+        <Canvas Name="MyCanvas" Background="Beige" Width="200" Height="200">
+          <Border Name="MyBorder" Width="100" Height="30" Background="DarkMagenta"
+                  Canvas.Left="50" Canvas.Top="50"/>
+        </Canvas>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>
