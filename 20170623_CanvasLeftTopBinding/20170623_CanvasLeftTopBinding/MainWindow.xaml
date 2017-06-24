@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_20170623_CanvasLeftTopBinding"
         mc:Ignorable="d"
-        Title="MainWindow" Height="200" Width="300">
+        Title="MainWindow" Height="300" Width="500">
   <Grid>
     <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
-      <StackPanel Width="100">
+      <StackPanel Width="200">
         <TextBlock Name="tbCanvasLeft"/>
         <TextBlock Text="{Binding ElementName=sldCanvasLeft, Path=Value, StringFormat=SliderValue \= 0}"/>
         <Slider Name="sldCanvasLeft" Value="0" Maximum="100" Minimum="0"
