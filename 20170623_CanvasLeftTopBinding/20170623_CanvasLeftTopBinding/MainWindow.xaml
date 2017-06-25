@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_20170623_CanvasLeftTopBinding"
         mc:Ignorable="d"
-        Title="MainWindow" Height="300" Width="500">
+        Title="MainWindow" Height="400" Width="500">
   <Grid>
     <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
       <StackPanel Width="200">
@@ -19,7 +19,19 @@
                  TickFrequency="1" IsSnapToTickEnabled="True" IsMoveToPointEnabled="True"/>
         <Button Name="btAdd10" Content="右へ10"/>
         <Button Name="btSub10" Content="左へ10"/>
+        
+        <TextBlock Name="tbAngle"/>
+        <TextBlock Text="{Binding ElementName=sldAngle, Path=Value, StringFormat=SliderValue \= 0}"/>
+        <Slider Name="sldAngle" Value="0" Maximum="360" Minimum="0"
+                 TickFrequency="1" IsSnapToTickEnabled="True" IsMoveToPointEnabled="True"/>
+        <Button Name="btAddAngle10" Content="角度+10"/>
+        <Button Name="btSubAngle10" Content="角度-10"/>
 
+        <TextBlock Name="tbDiffLeft" Text="diffLeft"/>
+        <TextBlock Name="tbDiffTop" Text="diffTop"/>
+        <TextBlock Name="tbRect" Text="Rect"/>
+        <!--<Button Name="btnSetMyRect" Content="btnSetMyRect"/>-->
+        
       </StackPanel>
       <StackPanel>
         <Canvas Name="MyCanvas" Background="Beige" Width="200" Height="200">
