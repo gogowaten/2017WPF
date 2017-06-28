@@ -113,7 +113,7 @@ Public Class MyConverter
         'Throw New NotImplementedException()
         Dim r As Rect = value
         Dim obj() As Object = New Object() {r.X, r.Y, r.Width, r.Height}
-        Return obj
+        Return New Object() {r.X, r.Y, r.Width, r.Height}
 
     End Function
 End Class

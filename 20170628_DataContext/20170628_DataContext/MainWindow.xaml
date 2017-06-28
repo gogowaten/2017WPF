@@ -1,0 +1,27 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170628_DataContext"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+    <StackPanel Orientation="Horizontal">
+      <StackPanel Name="MyStackPanel" Width="200">
+        <Button Name="btnCheck" Content="Check"/>
+        <Button Name="btnCheck2" Content="check2"/>
+        <Button Name="btnMove" Content="移動"/>
+        <TextBlock Name="tbAngle" Text="angle"/>
+        <TextBlock Name="tbRect" Text="rect"/>
+        <TextBlock Name="tbLeft" Text="test"/>
+        <TextBlock Name="tbBounds" Text="bounds"/>
+        
+        <Slider Name="sldAngle" Minimum="0" Maximum="360"/>
+      </StackPanel>
+      <Canvas Name="MyCanvas">
+        <Border Width="100" Height="100"  BorderThickness="1"  Canvas.Left="100" Canvas.Top="100" BorderBrush="#FF18E8DE"/>
+      </Canvas>
+    </StackPanel>
+  </Grid>
+</Window>

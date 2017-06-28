@@ -28,26 +28,58 @@ Class MainWindow
     'AnglePropertyの変更時に求めると変更直前の値になってしまうので不都合
     Private Shared Sub ChangeTest(dpO As DependencyObject, e As DependencyPropertyChangedEventArgs)
         Dim mw As MainWindow = DirectCast(dpO, MainWindow)
+        If e.Property.Name = NameOf(MyLeft) OrElse e.Property.Name = NameOf(MyTop) Then
+            ''            mw.MyExteriorRect = New Rect(1, 2, 3, 4)
+            ''mw.SetValue(MyExteriorRectProperty, New Rect(1, 2, 3, 4))
+            ''mw.MyAngle = mw.MyAngle
+            ''mw.SetValue(MyAngleProperty, mw.MyAngle)
+            ''            WPFでBindingを強制的に評価する -かずきのBlog@hatena
+            ''http://blog.okazuki.jp/entry/2014/09/04/204400
+
+            'Dim de As BindingExpression = mw.GetBindingExpression(MyExteriorRectProperty)
+            'If de Is Nothing Then Exit Sub
+            'de.UpdateTarget()
+        End If
         'Dim r As Rect = mw.MyExteriorRect
         'r.Offset(e.NewValue, 0.0)
         'Dim b As Border = mw.MyBorder
         'Dim c As Canvas = mw.MyCanvas
+        'c.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub()
+
+        '                                                         End Sub)
         ''Dim s As New Size(b.ActualWidth, b.ActualHeight)
         'Dim s As New Size(b.Width, b.Height)
         'Dim t As GeneralTransform = b.TransformToVisual(c)
         'Dim r As Rect = t.TransformBounds(New Rect(s))
+        'With mw
+        '    .MyExteriorLeft = r.Left
+        '    .MyExteriorTop = r.Top
+
+        'End With
+        'mw.SetValue(MyAngleProperty, e.NewValue)
+        'Dim n = e.Property.Name
+
         'Dim diffL As Double = mw.MyLeft - r.Left
         'Dim diffT As Double = mw.MyTop - r.Top
         'mw.MyDiffLeft = diffL
         'mw.MyDiffTop = diffT
-        mw.MyExteriorLeft += e.NewValue - e.OldValue
+        'mw.MyExteriorLeft += e.NewValue - e.OldValue
         'mw.MyExteriorRect = New Rect(e.NewValue - e.OldValue + mw.MyExteriorLeft, mw.MyExteriorRect.Y, mw.MyExteriorWidth, mw.MyExteriorHeight)
-        Dim p As New Point(e.NewValue - e.OldValue, 0)
+        'Dim p As New Point(e.NewValue - e.OldValue, 0)
         'mw.MyExteriorRect.Offset(p) 'これは無効
     End Sub
     Private Shared Function test(d As DependencyObject, b As Object) As Object
+        'Dim mw As MainWindow = DirectCast(d, MainWindow)
+        'Dim bo As Border = mw.MyBorder
+        'Dim s As Size = New Size(bo.Width, bo.Height)
+        'Dim tg As GeneralTransform = bo.TransformToVisual(mw.MyCanvas)
+        'Dim r As Rect = tg.TransformBounds(New Rect(s))
+        'With mw
 
-        Return DependencyProperty.UnsetValue
+        'End With
+
+        'Return b
+        'Return DependencyProperty.UnsetValue
     End Function
 #End Region
 
@@ -57,7 +89,7 @@ Class MainWindow
     'Left
     Public Shared ReadOnly MyLeftProperty As DependencyProperty = DependencyProperty.Register(
         NameOf(MyLeft), GetType(Double), GetType(MainWindow),
-        New PropertyMetadata(0.0, New PropertyChangedCallback(AddressOf ChangeTest)))
+        New PropertyMetadata(0.0))
     Public Property MyLeft As Double
         Get
             Return GetValue(MyLeftProperty)
@@ -68,7 +100,8 @@ Class MainWindow
     End Property
     'Top
     Public Shared ReadOnly MyTopProperty As DependencyProperty = DependencyProperty.Register(
-        NameOf(MyTop), GetType(Double), GetType(MainWindow), New PropertyMetadata(0.0))
+        NameOf(MyTop), GetType(Double), GetType(MainWindow),
+        New PropertyMetadata(0.0))
     Public Property MyTop As Double
         Get
             Return GetValue(MyTopProperty)
@@ -77,12 +110,12 @@ Class MainWindow
             SetValue(MyTopProperty, value)
         End Set
     End Property
+
     'Angle
-    'Public Shared ReadOnly MyAngleProperty As DependencyProperty = DependencyProperty.Register(
-    '    NameOf(MyAngle), GetType(Double), GetType(MainWindow), New PropertyMetadata(0.0, New PropertyChangedCallback(AddressOf ChangeTest),
-    '                                                                                New CoerceValueCallback(AddressOf test)))
     Public Shared ReadOnly MyAngleProperty As DependencyProperty = DependencyProperty.Register(
         NameOf(MyAngle), GetType(Double), GetType(MainWindow), New PropertyMetadata(0.0))
+    'Public Shared ReadOnly MyAngleProperty As DependencyProperty = DependencyProperty.Register(
+    '    NameOf(MyAngle), GetType(Double), GetType(MainWindow), New PropertyMetadata(0.0))
     Public Property MyAngle As Double
         Get
             Return GetValue(MyAngleProperty)
@@ -128,6 +161,22 @@ Class MainWindow
             SetValue(MyExteriorRectProperty, value)
         End Set
     End Property
+
+    'Angle変更時に更新するRect
+    Public Shared ReadOnly MyAngleRectProperty As DependencyProperty = DependencyProperty.Register(
+        NameOf(MyAngleRect), GetType(Rect), GetType(MainWindow))
+    Public Property MyAngleRect As Rect
+        Get
+            Return GetValue(MyAngleRectProperty)
+        End Get
+        Set(value As Rect)
+            SetValue(MyAngleRectProperty, value)
+        End Set
+    End Property
+
+#End Region
+
+#Region "4DoubleValue"
     Public Shared ReadOnly MyExteriorLeftProperty As DependencyProperty = DependencyProperty.Register(
         NameOf(MyExteriorLeft), GetType(Double), GetType(MainWindow), New PropertyMetadata(0.0))
     Public Property MyExteriorLeft As Double
@@ -193,35 +242,24 @@ Class MainWindow
 
         'バインディング
         Dim bindL As Binding = GetMyBinding(Me, MyLeftProperty, "MyLeft = {0:0}")
-        MyBorder.SetBinding(LeftProperty, bindL)
+        MyBorder.SetBinding(Canvas.LeftProperty, bindL)
+        'MyBorder.SetBinding(Window.LeftProperty, bindL)'↑どちらでも同じ？
         sldCanvasLeft.SetBinding(Slider.ValueProperty, bindL)
         tbCanvasLeft.SetBinding(TextBlock.TextProperty, bindL)
         Dim bindT As Binding = GetMyBinding(Me, MyTopProperty, "MyTop = {0:0}")
-        MyBorder.SetBinding(TopProperty, bindT)
+        MyBorder.SetBinding(Canvas.TopProperty, bindT)
         sldCanvasTop.SetBinding(Slider.ValueProperty, bindT)
         tbCanvasTop.SetBinding(TextBlock.TextProperty, bindT)
 
-        'Dim ro As New RotateTransform
-        'MyBorder.RenderTransform = ro
-        'MyBorder.RenderTransformOrigin = New Point(0.5, 0.5)
-        'Dim bindA As Binding = GetMyBinding(Me, MyAngleProperty, "MyAngle = {0:0}")
-        'BindingOperations.SetBinding(ro, RotateTransform.AngleProperty, bindA)
-        'sldAngle.SetBinding(Slider.ValueProperty, bindA)
-        'tbAngle.SetBinding(TextBlock.TextProperty, bindA)
-        'MyAngle = 10
-
-
         tbDiffLeft.SetBinding(TextBlock.TextProperty, GetMyBinding(Me, MyDiffLeftProperty, "MyDiffLeft = {0:0.00}"))
         tbDiffTop.SetBinding(TextBlock.TextProperty, GetMyBinding(Me, MyDiffTopProperty, "MyDiffTop = {0:0.00}"))
-        tbRect.SetBinding(TextBlock.TextProperty, GetMyBinding(Me, MyExteriorRectProperty, "MyRect = {0:0.0}"))
+        tbExRect.SetBinding(TextBlock.TextProperty, GetMyBinding(Me, MyExteriorRectProperty, "MyExTop = {0:0.0}"))
+        tbExTop.SetBinding(TextBlock.TextProperty, GetMyBinding(Me, MyExteriorTopProperty, "MyExTop = {0:0.0}"))
         tbExLeft.SetBinding(TextBlock.TextProperty, GetMyBinding(Me, MyExteriorLeftProperty, "MyExLeft = {0:0.0}"))
-
-        Dim bELeft As Binding = GetMyBinding(Me, MyExteriorLeftProperty, "")
 
     End Sub
 
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-        'MyAngle = 10
         MyAngle = 233
         MyLeft = 50
         MyTop = 10
@@ -233,20 +271,41 @@ Class MainWindow
         sldAngle.SetBinding(Slider.ValueProperty, bindA)
         tbAngle.SetBinding(TextBlock.TextProperty, bindA)
 
-        'Diff?
+        ''Angle変更時にRectとdiff更新
+        'Dim bindAngle As New Binding With {.Source = Me, .Path = New PropertyPath(MyAngleProperty), .Mode = BindingMode.OneWay,
+        '.Converter = New MyConverterRect, .ConverterParameter = Me}
+        'BindingOperations.SetBinding(Me, MyExteriorRectProperty, bindAngle)
+        ''↑↓逆方向からRectにバインドしてみたけど後に設定した方しか有効にならない
+        ''移動時にRectとdiff更新
+        'Dim bindRect As New Binding With {.Source = Me, .Path = New PropertyPath(MyExteriorRectProperty), .Mode = BindingMode.OneWayToSource,
+        '    .ConverterParameter = Me, .Converter = New MyConverterDiff}
+        'BindingOperations.SetBinding(Me, MyLeftProperty, bindRect)
+        'BindingOperations.SetBinding(Me, MyTopProperty, bindRect)
+
+        'まとめてみたけどConvertBackだと更新前の値が使われてしまう
+        'Dim bindRect As New Binding With {.Source = Me, .Path = New PropertyPath(MyExteriorRectProperty), .Mode = BindingMode.OneWayToSource,
+        '.ConverterParameter = Me, .Converter = New MyConverterRectBack}
+        'BindingOperations.SetBinding(Me, MyLeftProperty, bindRect)
+        'BindingOperations.SetBinding(Me, MyTopProperty, bindRect)
+        'BindingOperations.SetBinding(Me, MyAngleProperty, bindRect)
+
+        '3
         Dim bindAngle As New Binding With {.Source = Me, .Path = New PropertyPath(MyAngleProperty), .Mode = BindingMode.OneWay,
         .Converter = New MyConverterRect, .ConverterParameter = Me}
-
-        BindingOperations.SetBinding(Me, MyDiffLeftProperty, bindAngle)
-        BindingOperations.SetBinding(Me, MyDiffTopProperty, bindAngle)
-
-        'BindingOperations.SetBinding(Me, MyExteriorLeftProperty, bindAngle)
-        'BindingOperations.SetBinding(Me, MyExteriorTopProperty, bindAngle)
-        'BindingOperations.SetBinding(Me, MyExteriorWidthProperty, bindAngle)
-        'BindingOperations.SetBinding(Me, MyExteriorHeihgtProperty, bindAngle)
-
-        'BindingOperations.SetBinding(Me, MyLeftProperty, bindAngle)
-        'BindingOperations.SetBinding(Me, MyTopProperty, bindAngle)
+        Dim bindLeft As New Binding With {.Source = Me, .Path = New PropertyPath(MyLeftProperty), .Mode = BindingMode.OneWay,
+        .Converter = New MyConverterRect, .ConverterParameter = Me}
+        Dim bindTop As New Binding With {.Source = Me, .Path = New PropertyPath(MyTopProperty), .Mode = BindingMode.OneWay,
+        .Converter = New MyConverterRect, .ConverterParameter = Me}
+        Dim mb As New MultiBinding
+        With mb
+            .Converter = New MyConverterAllMulti
+            .ConverterParameter = Me
+            .Mode = BindingMode.OneWay
+            With .Bindings
+                .Add(bindAngle) : .Add(bindLeft) : .Add(bindTop)
+            End With
+        End With
+        BindingOperations.SetBinding(Me, MyExteriorRectProperty, mb)
 
         'rect
         'Dim bl As Binding = GetMyBinding(Me, MyExteriorLeftProperty, "")
@@ -261,23 +320,12 @@ Class MainWindow
         '        .Add(bl) : .Add(bt) : .Add(bw) : .Add(bh)
         '    End With
         'End With
-        BindingOperations.SetBinding(Me, MyExteriorRectProperty, bindAngle) 'これだとAngleに連動するけどEXLeftと連動しない
-        'BindingOperations.SetBinding(Me, MyExteriorRectProperty, mb) 'これだとRectがAngleに連動しないけどEXLeftと連動する
+        'BindingOperations.SetBinding(Me, MyAngleRectProperty, mb)
 
 
-        'Rectがソース
-        Dim sRect As Binding = GetMyBinding(Me, MyExteriorRectProperty, "MyExRect = {0:0.0}")
-        sRect.Converter = New MyConverterRectSource
-        sRect.ConverterParameter = Me
-        BindingOperations.SetBinding(Me, MyExteriorLeftProperty, sRect)
-        BindingOperations.SetBinding(Me, MyExteriorTopProperty, sRect)
-        BindingOperations.SetBinding(Me, MyExteriorWidthProperty, sRect)
-        BindingOperations.SetBinding(Me, MyExteriorHeihgtProperty, sRect)
-
-
-
-
-
+        'Angle変更時に更新するRectのBindingというかConverterのセット
+        Dim ChangeAngle As New Binding With {.Source = Me, .Path = New PropertyPath(MyAngleRectProperty), .Mode = BindingMode.OneWay,
+            .Converter = New MyConverterRect, .ConverterParameter = Me}
 
     End Sub
 End Class
@@ -331,6 +379,11 @@ End Class
 'End Class
 
 'RotateTransformが変化した時にRectを取得
+
+
+''' <summary>
+''' Angle変更時にRect更新
+''' </summary>
 Public Class MyConverterRect
     Implements IValueConverter
     'value = Angle
@@ -343,40 +396,74 @@ Public Class MyConverterRect
         Dim t As GeneralTransform = b.TransformToVisual(c)
         Dim r As Rect = t.TransformBounds(New Rect(s))
 
-        Dim dl As Double = mw.MyLeft - r.Left
-        Dim dt As Double = mw.MyTop - r.Top
-        mw.MyDiffTop = dt
-        mw.MyDiffLeft = dl
+        mw.MyDiffLeft = mw.MyLeft - r.Left
+        mw.MyDiffTop = mw.MyTop - r.Top
 
-        'mw.MyExteriorLeft = r.Left
-        'mw.MyExteriorTop = r.Top
-        'mw.MyExteriorWidth = r.Width
-        'mw.MyExteriorHeight = r.Height
+        mw.MyExteriorLeft = r.Left
+        mw.MyExteriorTop = r.Top
+        mw.MyExteriorWidth = r.Width
+        mw.MyExteriorHeight = r.Height
 
         Return r
 
     End Function
 
     Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
-        'Throw New NotImplementedException()
+        Throw New NotImplementedException()
         'Dim mw As MainWindow = DirectCast(parameter, MainWindow)
         'Dim d As Double = mw.MyAngle
         'Return d
-        Return DependencyProperty.UnsetValue
+        'Return DependencyProperty.UnsetValue
     End Function
 End Class
 
-Public Class MyConverterLeft
+
+Public Class MyConverterRectBack
+    Implements IValueConverter
+    'value = Angle
+    Public Function Convert(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.Convert
+        Throw New NotImplementedException()
+    End Function
+
+    Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
+        Dim mw As MainWindow = DirectCast(parameter, MainWindow)
+        Dim b As Border = mw.MyBorder
+        Dim c As Canvas = mw.MyCanvas
+        Dim s As New Size(b.Width, b.Height)
+        Dim t As GeneralTransform = b.TransformToVisual(c)
+        Dim r As Rect = t.TransformBounds(New Rect(s))
+        mw.MyDiffLeft = mw.MyLeft - r.Left
+        mw.MyDiffTop = mw.MyTop - r.Top
+
+        mw.MyExteriorLeft = r.Left
+        mw.MyExteriorTop = r.Top
+        mw.MyExteriorWidth = r.Width
+        mw.MyExteriorHeight = r.Height
+
+        Return r
+    End Function
+End Class
+
+
+
+'TopLeft変更時にRect更新
+Public Class MyConverterLeftTop
     Implements IValueConverter
     'value = Left
     Public Function Convert(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.Convert
-        '    Throw New NotImplementedException()
-        Dim mw As MainWindow = DirectCast(parameter, MainWindow)
+        Throw New NotImplementedException()
+        'Dim mw As MainWindow = DirectCast(parameter, MainWindow)
 
     End Function
 
     Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
-        Throw New NotImplementedException()
+        'Throw New NotImplementedException()
+        Dim r As Rect = value
+        Dim nr As Rect
+        Dim p As DependencyProperty = parameter
+        If p.Name = NameOf(MainWindow.MyLeftProperty) Then
+            nr = New Rect()
+        End If
     End Function
 End Class
 
@@ -426,3 +513,97 @@ Public Class MyConverterRectSource
         'Return DependencyProperty.UnsetValue
     End Function
 End Class
+
+Public Class MyConverterDiff
+    Implements IValueConverter
+
+    Public Function Convert(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.Convert
+        Dim t = targetType
+        'Throw New NotImplementedException()
+
+    End Function
+
+    Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
+        'ConvertBackだと更新前の値が使われるから期待した数値にならない
+        '    Throw New NotImplementedException()
+        Dim mw As MainWindow = DirectCast(parameter, MainWindow)
+        Dim b As Border = mw.MyBorder
+        Dim c As Canvas = mw.MyCanvas
+        Dim s As New Size(b.Width, b.Height)
+        Dim t As GeneralTransform = b.TransformToVisual(c)
+        Dim r As Rect = t.TransformBounds(New Rect(s))
+
+        mw.MyDiffLeft = mw.MyLeft - r.Left
+        mw.MyDiffTop = mw.MyTop - r.Top
+
+        mw.MyExteriorLeft = r.Left
+        mw.MyExteriorTop = r.Top
+        mw.MyExteriorWidth = r.Width
+        mw.MyExteriorHeight = r.Height
+        Return r
+    End Function
+End Class
+
+Public Class MyConverterAll
+    Implements IValueConverter
+
+    Public Function Convert(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.Convert
+        '    Throw New NotImplementedException()
+        Dim mw As MainWindow = DirectCast(parameter, MainWindow)
+        Dim b As Border = mw.MyBorder
+        Dim c As Canvas = mw.MyCanvas
+        Dim s As New Size(b.Width, b.Height)
+        Dim t As GeneralTransform = b.TransformToVisual(c)
+        Dim r As Rect = t.TransformBounds(New Rect(s))
+
+        mw.MyDiffLeft = mw.MyLeft - r.Left
+        mw.MyDiffTop = mw.MyTop - r.Top
+
+        mw.MyExteriorLeft = r.Left
+        mw.MyExteriorTop = r.Top
+        mw.MyExteriorWidth = r.Width
+        mw.MyExteriorHeight = r.Height
+        Return r
+    End Function
+
+    Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
+        Throw New NotImplementedException()
+    End Function
+End Class
+Public Class MyConverterAllMulti
+    Implements IMultiValueConverter
+
+    Public Function Convert(values() As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IMultiValueConverter.Convert
+        '    Throw New NotImplementedException()
+        Dim r1 = values(0)
+        Dim r2 = values(1)
+        Dim r3 = values(2)
+
+        Dim mw As MainWindow = DirectCast(parameter, MainWindow)
+        Dim b As Border = mw.MyBorder
+        Dim c As Canvas = mw.MyCanvas
+        Dim s As New Size(b.Width, b.Height)
+        Dim t As GeneralTransform = b.TransformToVisual(c)
+        Dim r As Rect = t.TransformBounds(New Rect(s))
+
+        'mw.MyDiffLeft = mw.MyLeft - r.Left
+        'mw.MyDiffTop = mw.MyTop - r.Top
+
+        mw.MyExteriorLeft = r.Left
+        mw.MyExteriorTop = r.Top
+        mw.MyExteriorWidth = r.Width
+        mw.MyExteriorHeight = r.Height
+        Return r
+    End Function
+
+    Public Function ConvertBack(value As Object, targetTypes() As Type, parameter As Object, culture As CultureInfo) As Object() Implements IMultiValueConverter.ConvertBack
+        Throw New NotImplementedException()
+    End Function
+End Class
+
+
+
+
+
+
+

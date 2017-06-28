@@ -1,0 +1,18 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170625_MyRectClass"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+    <StackPanel>
+      <TextBlock Name="tb1" Text="tb1"/>
+      <TextBlock Name="tb2" Text="tb2"/>
+      <Button Name="btn1" Content="btn1"/>
+      <Button Name="btn2" Content="btn2"/>
+      
+    </StackPanel>
+    </Grid>
+</Window>
