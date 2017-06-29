@@ -3,17 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:_20170628_DataContext"
+        xmlns:local="clr-namespace:_20170629_NotifyProperty_ExThumb"
         mc:Ignorable="d"
         Title="MainWindow" Height="300" Width="525">
-    <Grid>
+  <Grid>
     <StackPanel Orientation="Horizontal" Margin="5,20,5,0">
       <StackPanel Name="MyStackPanel" Width="210">
         <Button Name="btnCheck" Content="Check"/>
         <TextBlock Name="tbRect" Text="rect"/>
         <TextBlock Name="tbLeft" Text="test"/>
         <TextBlock Name="tbBounds" Text="bounds"/>
-        <TextBlock Name="tbAngle" Text="angle"/>        
+        <TextBlock Name="tbAngle" Text="angle"/>
         <Slider Name="sldAngle" Minimum="0" Maximum="360" SmallChange="1" LargeChange="1" IsSnapToTickEnabled="True"/>
         <!--<Button Name="btn1" Content="(0, 0)へ移動1"/>-->
         <Button Name="btn2" Content="(100, 100)へ移動1"/>

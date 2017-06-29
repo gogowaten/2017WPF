@@ -188,7 +188,7 @@ Public Class ExThumb
     '    Dim t As ExThumb = DirectCast(obj, ExThumb)
     '    Dim c As Canvas = t.RootCanvas
     '    Dim r As Rect = c.TransformToVisual(t).TransformBounds(New Rect(New Size(c.Width, c.Height)))
-    '    t.MyRect = r
+    '    t.MyOutBounds = r
     'End Sub
 
     'Public Shared ReadOnly AngleProperty As DependencyProperty = DependencyProperty.Register(
