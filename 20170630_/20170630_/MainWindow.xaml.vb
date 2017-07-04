@@ -1,4 +1,8 @@
-﻿Imports System.ComponentModel
+﻿'WPF、変形後の要素(Thumb)のグリッドスナップ移動 ( ソフトウェア ) - 午後わてんのブログ - Yahoo!ブログ
+'https://blogs.yahoo.co.jp/gogowaten/15001512.html
+
+
+Imports System.ComponentModel
 Imports System.Globalization
 Imports System.Windows.Controls.Primitives
 
