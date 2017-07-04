@@ -1,4 +1,8 @@
-﻿Imports System.ComponentModel
+﻿'WPF、変形した要素を指定位置に移動、NotifyProperty ( ソフトウェア ) - 午後わてんのブログ - Yahoo!ブログ
+'https://blogs.yahoo.co.jp/gogowaten/14998511.html
+
+
+Imports System.ComponentModel
 Imports System.Windows.Controls.Primitives
 
 
