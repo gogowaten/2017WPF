@@ -173,7 +173,9 @@ Public Class ExThumb
         MyLeft = x + (-MyDiffPointTopLeft.X)
         MyTop = y + (-MyDiffPointTopLeft.Y)
     End Sub
-    'DiffPointとOutBoundsの更新、変形時に実行する
+
+    'DiffPointとOutBoundsの更新
+    '変形時に実行する
     Private Sub SetDiffPointAndOutSize()
         Dim gt As GeneralTransform = RootCanvas.TransformToVisual(Me)
         Dim r As Rect = gt.TransformBounds(New Rect(New Size(RootCanvas.Width, RootCanvas.Height)))
@@ -189,13 +191,15 @@ Public Class ExThumb
         Dim p4 As Point = gt.Transform(New Point(0, RootCanvas.Height)) '左下
     End Sub
 
-    'OutBoundsとTransformedTopLeftの更新、移動時に実行する
+    'OutBoundsとTransformedTopLeftの更新、
+    '移動時はこちらだけ実行する
+    '変形時はDiffだけ
     Private Sub SetOutBounds()
         'Dim gt As GeneralTransform = RootCanvas.TransformToVisual(Me)
         Dim r As Rect = New Rect(New Point(MyDiffPoint.X + MyLeft, MyDiffPoint.Y + MyTop), MyOutSize)
-        MyOutBounds = r
+        MyOutBounds = r '外枠更新
         Dim p As New Point(MyLeft, MyTop)
-        MyTransformedTopLeft = p + MyDiffPointTopLeft
+        MyTransformedTopLeft = p + MyDiffPointTopLeft '左上更新
     End Sub
 
 
