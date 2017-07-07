@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_20170701_グリッドスナップ移動"
         mc:Ignorable="d"
-               Title="MainWindow" Height="450" Width="525">
+               Title="MainWindow" Height="450" Width="560">
   <Grid>
     <StackPanel Orientation="Horizontal" Margin="5,20,5,0">
       <StackPanel Name="MyStackPanel" Width="250">
@@ -31,9 +31,9 @@
         <RadioButton Name="rbFitFrame4辺" Content="ぴったり枠(青枠)の4辺"/>
         <RadioButton Name="rbTopLeft" Content="元の左上"/>
         <Border Height="1" Background="tomato" Margin="0,5"/>
-        <CheckBox Name="cbVisibleOutBounds" IsChecked="True" Content="青枠表示"/>
+        <CheckBox Name="cbVisibleOutBounds" IsChecked="True" Content="青枠表示(MyOutBounds)"/>
         <CheckBox Name="cbVisibleInBounds" IsChecked="True" Content="赤枠表示"/>
-        <CheckBox Name="cbVisibleGridLine" IsChecked="True" Content="グリッドライン表示"/>
+        <CheckBox Name="cbVisibleGridLine" IsChecked="True" Content="グリッドライン表示(水色)"/>
         <Button Name="btn2" Content="(100, 100)へ移動1"/>
         <Button Name="btn4" Content="(100, 100)へ移動2"/>
       </StackPanel>
