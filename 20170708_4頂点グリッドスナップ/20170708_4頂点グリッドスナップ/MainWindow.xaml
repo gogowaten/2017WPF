@@ -1,0 +1,51 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170708_4頂点グリッドスナップ"
+        mc:Ignorable="d"
+               Title="MainWindow" Height="500" Width="560">
+  <Grid>
+    <StackPanel Orientation="Horizontal" Margin="5,20,5,0">
+      <StackPanel Name="MyStackPanel" Width="250">
+        <Button Name="btnCheck" Content="Check"/>
+        <TextBlock Name="tbRect" Text="rect"/>
+        <TextBlock Name="tbLeft" Text="left"/>
+        <TextBlock Name="tbTop" Text="top"/>
+        <TextBlock Name="tbBounds" Text="bounds"/>
+        <TextBlock Name="tbTTopLeft" Text="transformed topleft"/>
+        <TextBlock Name="tbTTopRight" Text="transformed topright"/>
+        <TextBlock Name="tbTBottomRight" Text="transformed bottomright"/>
+        <TextBlock Name="tbTBottomLeft" Text="transformed bottomleft"/>
+        <Border Height="1" Background="tomato" Margin="0,5"/>
+        <TextBlock Name="tbAngle" Text="angle"/>
+        <Slider Name="sldAngle" Minimum="0" Maximum="360" SmallChange="1" LargeChange="1" IsSnapToTickEnabled="True"/>
+        <Border Height="1" Background="tomato" Margin="0,5"/>
+        <TextBlock Name="tbGrid" Text="{Binding ElementName=sldGrid, Path=Value, StringFormat=GridSize \= 0}"/>
+        <Slider Name="sldGrid" Minimum="1" Maximum="50" SmallChange="1" LargeChange="1" IsSnapToTickEnabled="True"/>
+        <Border Height="1" Background="tomato" Margin="0,5"/>
+        <TextBlock Text="グリッドスナップの基準点選択"/>
+        <RadioButton Name="rbNone" Content="スナップしない" IsChecked="True"/>
+        <RadioButton Name="rbNormal" Content="元の枠(赤枠)の左上"/>
+        <RadioButton Name="rbFitFrame" Content="変形後が収まるぴったり枠(青枠)の左上"/>
+        <RadioButton Name="rbFitFrame4辺" Content="ぴったり枠(青枠)の4辺(Excelと同じ)"/>
+        <RadioButton Name="rbFitPoint4頂点" Content="変形後の頂点をグリッドの頂点にスナップ"/>
+        <RadioButton Name="rbFitPoint4頂点と4辺" Content="変形後の頂点＆ぴったり枠"/>
+        <RadioButton Name="rbTopLeft" Content="変形後の左上頂点をグリッド頂点にスナップ"/>
+        <Border Height="1" Background="tomato" Margin="0,5"/>
+        <CheckBox Name="cbVisibleOutBounds" IsChecked="True" Content="青枠表示(MyOutBounds)"/>
+        <CheckBox Name="cbVisibleInBounds" IsChecked="True" Content="赤枠表示"/>
+        <CheckBox Name="cbVisibleGridLine" IsChecked="True" Content="グリッドライン表示(水色)"/>
+        <Button Name="btn2" Content="(100, 100)へ移動1"/>
+        <Button Name="btn4" Content="(100, 100)へ移動2"/>
+      </StackPanel>
+      <Canvas Name="MyCanvas" Width="300" Height="250" Background="Transparent">
+        <Path Name="GridLine"/>
+        <!--<Line Name="Line1" StrokeEndLineCap="Square" Stroke="Green" X1="-10" Y1="-10" X2="-20" Y2="-20" StrokeStartLineCap="Triangle" StrokeThickness="10"/>-->
+        <Path Name="pathOutBounds" Stroke="RoyalBlue" StrokeThickness="2"/>
+        <Path Name="pathInBounds" Stroke="red" StrokeThickness="2"/>
+      </Canvas>
+    </StackPanel>
+  </Grid>
+</Window>

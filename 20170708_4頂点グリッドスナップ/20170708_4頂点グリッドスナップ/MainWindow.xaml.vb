@@ -34,6 +34,7 @@ Class MainWindow
             .Data = pGeometry
             .Stroke = Brushes.Cyan
             .StrokeThickness = 2.0
+            .Opacity = 0.3
         End With
     End Sub
 
@@ -61,6 +62,8 @@ Class MainWindow
     End Sub
 
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+
+
         'グリッドサイズ指定
         sldGrid.Value = 50
         'グリッド罫線表示
@@ -73,7 +76,7 @@ Class MainWindow
 
         'ExThumbに100x100の赤Borderを追加してMyCanvasに表示
         Dim ext As New ExThumb(New Border With {
-                               .Width = 100, .Height = 100, .Background = Brushes.Orange, .Opacity = 0.5})
+                               .Width = 100, .Height = 100, .Background = Brushes.Orange, .Opacity = 0.7})
         Canvas.SetLeft(ext, 0) : Canvas.SetTop(ext, 0)
         MyCanvas.Children.Add(ext)
         MyExThumb = ext
@@ -130,9 +133,10 @@ Class MainWindow
 
     End Sub
 
+#Region "主にぴったり枠グリッドスナップ用"
 
     '方向判定、目標グリッドが移動方向と逆なら移動しない
-    Private Function IsDirectionJudgment(mMove As Double, targetGrid As Integer, locateX As Double) As Boolean
+    Private Function IsDirection(mMove As Double, targetGrid As Integer, locateX As Double) As Boolean
         If targetGrid - locateX > 0 And mMove > 0 Then
             Return True
         ElseIf targetGrid - locateX < 0 And mMove < 0 Then
@@ -141,7 +145,7 @@ Class MainWindow
         Return False
     End Function
     '距離判定、マウスの移動距離が目標グリッドまで届いていなければ移動しない
-    Private Function IsDistanceJudgment(mMove As Double, targetGrid As Integer, locateX As Double) As Boolean
+    Private Function IsDistance(mMove As Double, targetGrid As Integer, locateX As Double) As Boolean
         If Math.Abs(mMove) >= Math.Abs(targetGrid - locateX) Then
             Return True
         End If
@@ -183,10 +187,10 @@ Class MainWindow
         Dim topLeftSideTargetGrid As Integer = GetTargetGridLocate(oTopOrLeft, mMove, gridSize)
 
         '方向判定、目標グリッドが移動方向と逆なら移動しない
-        Dim isTopLeft方向 As Boolean = IsDirectionJudgment(mMove, topLeftSideTargetGrid, oTopOrLeft)
+        Dim isTopLeft方向 As Boolean = IsDirection(mMove, topLeftSideTargetGrid, oTopOrLeft)
 
         '距離判定、マウスの移動距離が目標グリッドまで届いていなければ移動しない
-        Dim isTopLeft距離 As Boolean = IsDistanceJudgment(mMove, topLeftSideTargetGrid, oTopOrLeft)
+        Dim isTopLeft距離 As Boolean = IsDistance(mMove, topLeftSideTargetGrid, oTopOrLeft)
 
         '左辺判定、上辺判定
         Dim isTopLeft As Boolean = False
@@ -195,8 +199,8 @@ Class MainWindow
 
         '右辺、下辺
         Dim bottomRightSideTargetGrid As Integer = GetTargetGridLocate(oBottomOrRight, mMove, gridSize)
-        Dim isBottomRight方向 As Boolean = IsDirectionJudgment(mMove, bottomRightSideTargetGrid, oBottomOrRight)
-        Dim isBottomRight距離 As Boolean = IsDistanceJudgment(mMove, bottomRightSideTargetGrid, oBottomOrRight)
+        Dim isBottomRight方向 As Boolean = IsDirection(mMove, bottomRightSideTargetGrid, oBottomOrRight)
+        Dim isBottomRight距離 As Boolean = IsDistance(mMove, bottomRightSideTargetGrid, oBottomOrRight)
         Dim isBottomRight As Boolean = False
         If isBottomRight方向 And isBottomRight距離 Then isBottomRight = True
 
@@ -225,6 +229,154 @@ Class MainWindow
         Return targetLocate
 
     End Function
+#End Region
+
+#Region "元の4頂点＆4辺グリッドスナップ用"
+    ''' <summary>
+    ''' 元の4頂点＆4辺グリッドスナップ用
+    ''' </summary>
+    ''' <param name="gridSize">グリッドサイズ</param>
+    ''' <param name="mMove">マウスの移動距離</param>
+    ''' <param name="originalLocate">変形前の左上の位置</param>
+    ''' <param name="TopLeftXY">変形後の左上の位置</param>
+    ''' <param name="TopRightXY">変形後の右上の位置</param>
+    ''' <param name="BottomRightXY">変形後の右下の位置</param>
+    ''' <param name="BottomLeftXY">変形後の左下の位置</param>
+    ''' <returns></returns>
+    Private Function GetMyTargetGrid4Point4Side(gridSize As Integer, mMove As Double, originalLocate As Double,
+                          TopLeftXY As Double, TopRightXY As Double, BottomRightXY As Double, BottomLeftXY As Double) As MyTargetGridData
+        '各4辺の目標グリッド、距離、有効判定、指定座標を取得
+        Dim TopLTargetGrid As MyTargetGridData = GetMyTargetGrid(gridSize, mMove, TopLeftXY, originalLocate)
+        Dim TopRTargetGrid As MyTargetGridData = GetMyTargetGrid(gridSize, mMove, TopRightXY, originalLocate)
+        Dim BotRTargetGrid As MyTargetGridData = GetMyTargetGrid(gridSize, mMove, BottomRightXY, originalLocate)
+        Dim BotLTargetGrid As MyTargetGridData = GetMyTargetGrid(gridSize, mMove, BottomLeftXY, originalLocate)
+
+        'SortedListに入れて並べ替える、キーに距離を指定
+        Dim sl As New SortedList(Of Double, MyTargetGridData)
+        '同じ値のkeyは追加できないのでtry
+        Try
+            With sl
+                .Add(TopLTargetGrid.Distance, TopLTargetGrid)
+                .Add(TopRTargetGrid.Distance, TopRTargetGrid)
+                .Add(BotRTargetGrid.Distance, BotRTargetGrid)
+                .Add(BotLTargetGrid.Distance, BotLTargetGrid)
+            End With
+        Catch ex As Exception
+
+        End Try
+
+        '一番近いものを取得、有効なものだけを大きい(遠い)方から入れていって上書きしていく
+        Dim myTargetGrid As MyTargetGridData
+        For i As Integer = sl.Count - 1 To 0 Step -1
+            If sl.Values(i).IsValid = True Then
+                myTargetGrid = sl.Values(i)
+            End If
+        Next
+        Return myTargetGrid
+    End Function
+    Private Function GetMyTargetGrid(gridSize As Integer, mMove As Double, pointLocate As Double, originalLocate As Double) As MyTargetGridData
+        Dim myTargetGrid As New MyTargetGridData
+        Dim tGrid As Integer = GetTargetGridLocate(pointLocate, mMove, gridSize)
+        With myTargetGrid
+            '距離、方向ともに有効なら有効にする
+            '判定結果がTrue And Trueの場合Trueになる
+            .IsValid = IsDistance(mMove, tGrid, pointLocate) And IsDirection(mMove, tGrid, pointLocate)
+            .Distance = Math.Abs((pointLocate + mMove) - tGrid)
+            .TargetLocate = tGrid
+            '指定する位置
+            .SetLocate = tGrid - (pointLocate - originalLocate)
+        End With
+        Return myTargetGrid
+    End Function
+
+#End Region
+
+
+#Region "元の4頂点グリッドスナップ用"
+
+    '指定位置から一番近いグリッド位置を返す
+    Private Function GetNearGridPointDistance(xy As Double, gridSize As Integer) As Double
+        Dim m As Double = xy Mod gridSize
+        If m > gridSize / 2 Then
+            Return xy + gridSize - m
+        Else
+            Return xy - m
+        End If
+    End Function
+    '指定座標から一番近いグリッド頂点の座標を返す
+    Private Function GetNearestGridPoint(dp As Point, gridSize As Integer) As Point
+        Dim x As Double = GetNearGridPointDistance(dp.X, gridSize) '最寄りのグリッドx座標
+        Dim y As Double = GetNearGridPointDistance(dp.Y, gridSize) 'y座標
+        Return New Point(x, y)
+    End Function
+    '2点間の距離を返す
+    Private Function GetDistance(p1 As Point, p2 As Point) As Double
+        Dim x As Double = p1.X - p2.X
+        Dim y As Double = p1.Y - p2.Y
+        Dim rd As Double = Math.Sqrt(x ^ 2 + y ^ 2)
+        Return rd
+    End Function
+    ''' <summary>
+    ''' 移動後の座標から一番近いグリッド頂点や距離、移動前からの距離などを返す
+    ''' </summary>
+    ''' <param name="gridSize">グリッドサイズ</param>
+    ''' <param name="transformedPoint">移動前の座標</param>
+    ''' <param name="mMove">マウスの移動座標</param>
+    ''' <returns></returns>
+    Private Function GetPointData(gridSize As Integer, transformedPoint As Point, mMove As Point) As MyTargetGridPointData
+        Dim tPoint As New MyTargetGridPointData
+        With tPoint
+            '移動後地点の最寄りのグリッド頂点
+            .TargetGridPoint = GetNearestGridPoint(transformedPoint + mMove, gridSize)
+            'その距離
+            .Distance = GetDistance(transformedPoint + mMove, .TargetGridPoint)
+            '今回は未使用、値が有効かどうか
+            .IsValid = True
+            '移動前の地点から最寄りのグリッド頂点までの差分
+            .DiffPoint = transformedPoint - .TargetGridPoint
+
+        End With
+        Return tPoint
+    End Function
+    ''' <summary>
+    ''' 元の4頂点グリッドスナップ用、4頂点の最寄りのグリッド頂点を取得、一番近いグリッド頂点情報を返す
+    ''' </summary>
+    ''' <param name="gridSize">グリッドサイズ</param>
+    ''' <param name="mMove">マウスの移動距離</param>
+    ''' <param name="TopLeftXY">変形後の左上の位置</param>
+    ''' <param name="TopRightXY">変形後の右上の位置</param>
+    ''' <param name="BottomRightXY">変形後の右下の位置</param>
+    ''' <param name="BottomLeftXY">変形後の左下の位置</param>
+    ''' <returns></returns>
+    Private Function GetMyTargetGrid4Point2(gridSize As Integer, mMove As Point,
+                          TopLeftXY As Point, TopRightXY As Point, BottomRightXY As Point, BottomLeftXY As Point) As MyTargetGridPointData
+        '移動後の各4頂点の最寄りのグリッド頂点のData取得
+        Dim TLData As MyTargetGridPointData = GetPointData(gridSize, TopLeftXY, mMove)
+        Dim TRData As MyTargetGridPointData = GetPointData(gridSize, TopRightXY, mMove)
+        Dim BRData As MyTargetGridPointData = GetPointData(gridSize, BottomRightXY, mMove)
+        Dim BLData As MyTargetGridPointData = GetPointData(gridSize, BottomLeftXY, mMove)
+        '一番近いグリッド頂点を取得する
+        '4データを一旦リストに入れる
+        Dim dataList As New List(Of MyTargetGridPointData) From {TLData, TRData, BRData, BLData}
+
+        'SortedListに入れて並べ替える、距離をkeyにして昇順
+        Dim sl As New SortedList(Of Double, MyTargetGridPointData)
+        '同じ距離があった場合にリストに追加しようとするとエラーになるのでtryで無視して次のDataを入れていく
+        For i As Integer = 0 To 3
+            Try
+                sl.Add(dataList(i).Distance, dataList(i))
+            Catch ex As Exception
+
+            End Try
+        Next
+        'Dim rv As MyTargetGridPointData = sl.Values(0)
+        '一番近いDataを返す
+        Return sl.Values(0)
+
+    End Function
+
+
+#End Region
 
 
     'マウスドラッグ移動
@@ -234,9 +386,6 @@ Class MainWindow
         Dim hChange As Double = e.HorizontalChange
         Dim vChange As Double = e.VerticalChange
 
-        ''通常移動
-        'MyExThumb.MyLeft += e.HorizontalChange
-        'MyExThumb.MyTop += e.VerticalChange
 
         ''グリッドスナップ移動
         Dim x, y As Double
@@ -248,6 +397,11 @@ Class MainWindow
 
         With MyExThumb
             Select Case True
+                Case rbNone.IsChecked
+                    '通常移動
+                    MyExThumb.MyLeft += e.HorizontalChange
+                    MyExThumb.MyTop += e.VerticalChange
+
                 Case rbNormal.IsChecked
                     '変形前の左上を基準、赤枠
 
@@ -257,7 +411,7 @@ Class MainWindow
                     xxx = xx * GridSize : yyy = yy * GridSize
                     .MyLeft = xxx : .MyTop = yyy
 
-                Case rbFitFlame.IsChecked
+                Case rbFitFrame.IsChecked
                     'ぴったり枠の左上を基準、青枠(OutBounds)
 
                     x = .MyLeft + hChange + .MyDiffPoint.X
@@ -273,65 +427,6 @@ Class MainWindow
                         MyExThumb.SetOutBoundTop(topPoint)
                     End If
 
-
-                    ''目標グリッドライン取得
-                    'Dim outBound上 As Double = MyExThumb.MyOutBounds.Top 'ホントはDoubleだけど変な端数が出るからIntegerにしたけどDoubleに戻しても大丈夫みたい？
-                    'Dim outBound下 As Double = MyExThumb.MyOutBounds.Bottom
-                    'Dim targetLine上, targetLine下 As Integer
-                    'If vChange > 0 Then '下方向移動のとき
-                    '    targetLine上 = Math.Ceiling(outBound上 / GridSize) * GridSize
-                    '    targetLine下 = Math.Ceiling(outBound下 / GridSize) * GridSize
-                    'ElseIf vChange < 0 Then '上方向移動のとき
-                    '    targetLine上 = Math.Floor(outBound上 / GridSize) * GridSize
-                    '    targetLine下 = Math.Floor(outBound下 / GridSize) * GridSize
-                    'End If
-
-                    ''近い方を選別、距離は絶対値で比較、僅かな距離なら0にする
-                    'Dim distance上 As Double = Math.Abs(targetLine上 - outBound上) '距離
-                    'Dim distance下 As Double = Math.Abs(targetLine下 - outBound下)
-                    'If 0.0000000000001 > distance上 Then
-                    '    distance上 = 0
-                    'End If
-                    'If 0.0000000000001 > distance下 Then
-                    '    distance下 = 0
-                    'End If
-
-
-                    ''Dim diff As Double = Math.Abs(distance下 - Fix(distance下))
-                    ''If diff > 0.0000000001 And 0.0001 > diff Then MsgBox("")
-
-                    ''0距離(上下ともにグリッドにピッタリ)の場合は上枠採用することにしたので
-                    ''目標ラインを左にしてマウスの動きによって分ける
-                    'If distance上 = 0 And distance下 = 0 Then
-                    '    If vChange > 0 Then '距離計測をDoubleにすると変形要素はめったにここには来ない
-                    '        targetLine上 += GridSize 'マウスが下移動なら右隣のライン
-                    '    Else
-                    '        targetLine上 -= GridSize '左移動なら左隣のライン
-                    '    End If
-                    'ElseIf distance上 = 0 Then
-                    '    distance上 = GridSize '0距離なら次のグリッド
-                    'ElseIf distance下 = 0 Then
-                    '    distance下 = GridSize '0距離なら次のグリッド
-                    'End If
-
-                    ''上辺目標まで距離＞下辺目標まで距離、つまり下辺のほうが近いなら下辺
-                    'If distance上 > distance下 Then
-                    '    'グリッドラインまでの距離以上マウスが移動していたなら移動
-                    '    If distance下 <= Math.Abs(vChange) Then
-                    '        .SetOutBoundTop(targetLine下 - .MyOutBounds.Height)
-                    '    End If
-                    'ElseIf distance上 < distance下 Then
-                    '    'グリッドラインまでの距離以上マウスが移動していたなら移動
-                    '    If distance上 <= Math.Abs(vChange) Then
-                    '        .SetOutBoundTop(targetLine上)
-                    '    End If
-                    'Else '同じ距離なら
-                    '    If Math.Abs(vChange) >= GridSize Then
-                    '        .SetOutBoundTop(targetLine上)
-                    '    End If
-                    'End If
-
-
                     '横移動
                     Dim lPoint As Double = GetTargetSideLocate(hChange, GridSize,
                                                                MyExThumb.MyOutBounds.Left,
@@ -341,67 +436,42 @@ Class MainWindow
                         MyExThumb.SetOutBoundLeft(lPoint)
                     End If
 
-                    ''グリッドラインまでの距離測定
-                    'Dim outBound左 As Double = MyExThumb.MyOutBounds.Left 'ここはDoubleにするかIntegerにするかどっちがいい？
-                    'Dim outBound右 As Double = MyExThumb.MyOutBounds.Right
-                    'Dim targetLine左, targetLine右 As Integer
-                    'If hChange > 0 Then '右方向移動は切り上げ
-                    '    targetLine左 = Math.Ceiling(outBound左 / GridSize) * GridSize
-                    '    targetLine右 = Math.Ceiling(outBound右 / GridSize) * GridSize
-                    'ElseIf hChange < 0 Then '左方向移動は切り捨て、マイナスの値になることもあるのでTruncateよりFloorの方がいいみたい？
-                    '    'targetLine左 = Math.Truncate(outBound左 / GridSize) * GridSize
-                    '    'targetLine右 = Math.Truncate(outBound右 / GridSize) * GridSize
-                    '    targetLine左 = Math.Floor(outBound左 / GridSize) * GridSize
-                    '    targetLine右 = Math.Floor(outBound右 / GridSize) * GridSize
-                    'End If
+                Case rbFitPoint4頂点.IsChecked
+                    '変形後の元の4頂点をグリッドの頂点にスナップ
+                    '4頂点それぞれの最寄りのグリッド頂点の中から一番近いグリッド頂点やその距離の差分などを取得
+                    Dim pData As MyTargetGridPointData = GetMyTargetGrid4Point2(GridSize, New Point(hChange, vChange),
+                                                                               MyExThumb.MyTransformedTopLeft,
+                                                                               MyExThumb.MyTransformedTopRight,
+                                                                               MyExThumb.MyTransformedBottomRight,
+                                                                               MyExThumb.MyTransformedBottomLeft)
+                    '今と違う位置(距離の差分が0以外)ならその場所へ移動
+                    If pData.IsValid Then
+                        If pData.DiffPoint.X <> 0 Then MyExThumb.MyLeft -= pData.DiffPoint.X
+                        If pData.DiffPoint.Y <> 0 Then MyExThumb.MyTop -= pData.DiffPoint.Y
+                    End If
 
-                    ''左右それぞれの距離測定、距離は絶対値で、僅かな距離なら0にする
-                    'Dim distance左 As Double = Math.Abs(targetLine左 - outBound左) '距離
-                    'Dim distance右 As Double = Math.Abs(targetLine右 - outBound右)
-                    ''小数（浮動小数点数型）の計算が思った結果にならない理由と解決法、Decimal型はいつ使うか？: .NET Tips: C#, VB.NET
-                    ''https://dobon.net/vb/dotnet/beginner/floatingpointerror.html
+                Case rbFitPoint4頂点と4辺.IsChecked
+                    '変形後の元の4頂点とぴったり枠の4辺のどちらでもスナップ
+                    'つまり上の2つの処理を合わせた感じの処理になる
+                    '縦移動
+                    With MyExThumb
+                        Dim myTargetGridY As MyTargetGridData =
+                            GetMyTargetGrid4Point4Side(GridSize, vChange, .MyTop,
+                                                       .MyTransformedTopLeft.Y, .MyTransformedTopRight.Y,
+                                                       .MyTransformedBottomRight.Y, .MyTransformedBottomLeft.Y)
+                        If myTargetGridY.IsValid Then
+                            .MyTop = myTargetGridY.SetLocate
+                        End If
+                    End With
 
-                    ''If 0.00000000000001 > Math.Abs(distance左) Then MsgBox(distance左)
-                    'If 0.0000000000001 > distance左 Then
-                    '    distance左 = 0
-                    'End If
-                    'If 0.0000000000001 > distance右 Then
-                    '    distance右 = 0
-                    'End If
-
-
-                    ''0距離(左右ともにグリッドにピッタリ)の場合は左枠採用することにしたので
-                    ''目標ラインを左にしてマウスの動きによって分ける
-                    'If distance左 = 0 And distance右 = 0 Then
-                    '    If hChange > 0 Then
-                    '        targetLine左 += GridSize 'マウスが右移動なら右隣のライン
-                    '    Else
-                    '        targetLine左 -= GridSize '左移動なら左隣のライン
-                    '    End If
-                    'ElseIf distance左 = 0 Then
-                    '    distance左 = GridSize '0距離なら次のグリッド
-                    'ElseIf distance右 = 0 Then
-                    '    distance右 = GridSize '0距離なら次のグリッド
-                    'End If
-
-                    ''近い距離の方を採用、同じ距離なら
-                    'If distance左 < distance右 Then '右枠採用
-                    '    'グリッドラインまでの距離以上マウスが移動していたなら移動
-                    '    If distance左 <= Math.Abs(hChange) Then
-                    '        .SetOutBoundLeft(targetLine左)
-                    '    End If
-                    'ElseIf distance左 > distance右 Then '左枠採用
-                    '    'グリッドラインまでの距離以上マウスが移動していたなら移動
-                    '    If distance右 < Math.Abs(hChange) Then
-                    '        .SetOutBoundLeft(targetLine右 - .MyOutBounds.Width)
-                    '    End If
-                    'Else '同じ距離なら
-                    '    If Math.Abs(hChange) >= GridSize Then
-                    '        .SetOutBoundLeft(targetLine左)
-                    '    End If
-                    'End If
-
-
+                    '横移動
+                    Dim myTargetGridX As MyTargetGridData = GetMyTargetGrid4Point4Side(GridSize, hChange, MyExThumb.MyLeft, MyExThumb.MyTransformedTopLeft.X,
+                                                          MyExThumb.MyTransformedTopRight.X,
+                                                          MyExThumb.MyTransformedBottomRight.X,
+                                                          MyExThumb.MyTransformedBottomLeft.X)
+                    If myTargetGridX.IsValid Then
+                        MyExThumb.MyLeft = myTargetGridX.SetLocate
+                    End If
 
                 Case rbTopLeft.IsChecked
                     '変形で移動した元左上座標を基準
@@ -471,16 +541,11 @@ Public Class ExThumb
         Dim r As Rect = gt.TransformBounds(New Rect(New Size(RootCanvas.Width, RootCanvas.Height)))
         MyDiffPoint = r.Location 'ピッタリ座標
         MyOutSize = r.Size 'ぴったりサイズ
-        'テスト用処理
-        MyDiffPointTopLeft = r.TopLeft ' gt.Transform(New Point(0, 0)) '元左上差分
-        MyDiffPointTopRight = r.TopRight ' gt.Transform(New Point(RootCanvas.Width, 0)) '右上
-        MyDiffPointBottomRight = r.BottomRight ' gt.Transform(New Point(RootCanvas.Width, RootCanvas.Height)) '右下
-        MyDiffPointBottomLeft = r.BottomLeft ' gt.Transform(New Point(0, RootCanvas.Height)) '左下
-        ''こっちが本来の処理
-        'MyDiffPointTopLeft = gt.Transform(New Point(0, 0)) '元左上差分
-        'MyDiffPointTopRight = gt.Transform(New Point(RootCanvas.Width, 0)) '右上
-        'MyDiffPointBottomRight = gt.Transform(New Point(RootCanvas.Width, RootCanvas.Height)) '右下
-        'MyDiffPointBottomLeft = gt.Transform(New Point(0, RootCanvas.Height)) '左下
+        '元の4頂点と変形後の4頂点の差分取得
+        MyDiffPointTopLeft = gt.Transform(New Point(0, 0)) '元左上差分
+        MyDiffPointTopRight = gt.Transform(New Point(RootCanvas.Width, 0)) '右上
+        MyDiffPointBottomRight = gt.Transform(New Point(RootCanvas.Width, RootCanvas.Height)) '右下
+        MyDiffPointBottomLeft = gt.Transform(New Point(0, RootCanvas.Height)) '左下
 
         Call SetOutBounds()
 
@@ -797,3 +862,17 @@ Public Class MyConverterVisibility
         Throw New NotImplementedException()
     End Function
 End Class
+
+Public Structure MyTargetGridData
+    Dim TargetLocate As Integer
+    Dim Distance As Double
+    Dim IsValid As Boolean
+    Dim SetLocate As Double
+End Structure
+
+Public Structure MyTargetGridPointData
+    Dim TargetGridPoint As Point
+    Dim Distance As Double
+    Dim IsValid As Boolean
+    Dim DiffPoint As Point
+End Structure
