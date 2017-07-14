@@ -251,19 +251,19 @@ Class MainWindow
         Dim BotRTargetGrid As MyTargetGridData = GetMyTargetGrid(gridSize, mMove, BottomRightXY, originalLocate)
         Dim BotLTargetGrid As MyTargetGridData = GetMyTargetGrid(gridSize, mMove, BottomLeftXY, originalLocate)
 
+        '一旦リストに入れる
+        Dim dataList As New List(Of MyTargetGridData) From {TopLTargetGrid, TopRTargetGrid, BotRTargetGrid, BotLTargetGrid}
+
         'SortedListに入れて並べ替える、キーに距離を指定
         Dim sl As New SortedList(Of Double, MyTargetGridData)
         '同じ値のkeyは追加できないのでtry
-        Try
-            With sl
-                .Add(TopLTargetGrid.Distance, TopLTargetGrid)
-                .Add(TopRTargetGrid.Distance, TopRTargetGrid)
-                .Add(BotRTargetGrid.Distance, BotRTargetGrid)
-                .Add(BotLTargetGrid.Distance, BotLTargetGrid)
-            End With
-        Catch ex As Exception
+        For i As Integer = 0 To 3
+            Try
+                sl.Add(dataList(i).Distance, dataList(i))
+            Catch ex As Exception
 
-        End Try
+            End Try
+        Next
 
         '一番近いものを取得、有効なものだけを大きい(遠い)方から入れていって上書きしていく
         Dim myTargetGrid As MyTargetGridData
@@ -871,8 +871,8 @@ Public Structure MyTargetGridData
 End Structure
 
 Public Structure MyTargetGridPointData
-    Dim TargetGridPoint As Point
-    Dim Distance As Double
-    Dim IsValid As Boolean
-    Dim DiffPoint As Point
+    Dim TargetGridPoint As Point '目標グリッド位置
+    Dim Distance As Double '距離
+    Dim IsValid As Boolean '
+    Dim DiffPoint As Point '元の位置からの差分
 End Structure
