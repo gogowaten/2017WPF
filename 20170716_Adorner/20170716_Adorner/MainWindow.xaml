@@ -1,0 +1,67 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170716_Adorner"
+        xmlns:my="clr-namespace:_20170716_Adorner"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+  <Window.Resources>
+
+    <!--リサイズハンドル用のテンプレート定義-->
+    <ControlTemplate TargetType="Thumb" x:Key="ResizeHandleTemplate">
+      <Ellipse Width="10" Height="10" Margin="-3"
+                     Stroke="DimGray" Fill="LightSteelBlue"/>
+    </ControlTemplate>
+
+    <!--装飾用のテンプレート定義-->
+    <ControlTemplate x:Key="AdornerTemplate">
+      <Grid>
+        <Thumb Name="ResizeThumb_LT" 
+                       HorizontalAlignment="Left" VerticalAlignment="Top"
+                       Template="{StaticResource ResizeHandleTemplate}"
+                       DragDelta="ResizeThumb_DragDelta"/>
+        <Thumb Name="ResizeThumb_RT" 
+                       HorizontalAlignment="Right" VerticalAlignment="Top"
+                       Template="{StaticResource ResizeHandleTemplate}"
+                       DragDelta="ResizeThumb_DragDelta"/>
+        <Thumb Name="ResizeThumb_LB" 
+                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                       Template="{StaticResource ResizeHandleTemplate}"
+                       DragDelta="ResizeThumb_DragDelta"/>
+        <Thumb Name="ResizeThumb_RB" 
+                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                       Template="{StaticResource ResizeHandleTemplate}"
+                       DragDelta="ResizeThumb_DragDelta"/>
+      </Grid>
+    </ControlTemplate>
+
+  </Window.Resources>
+  <Canvas>
+    <!--単純な利用：装飾対象には添付プロパティを設定する-->
+    <Button Name="Target"
+                Canvas.Left="100" Canvas.Top="20"
+                Width="100" Height="40"
+                Content="サイズ変更可"             
+                my:AdornedBy.Template="{StaticResource AdornerTemplate}"/>
+
+    <!--フォーカスで装飾を有効にする場合-->
+    <Button Name="Target2"
+                Canvas.Left="100" Canvas.Top="80"
+                Width="100" Height="40"
+                Content="フォーカスで">
+      <Button.Style>
+        <Style TargetType="Button">
+          <Style.Triggers>
+            <Trigger Property="IsFocused" Value="True">
+              <Setter Property="my:AdornedBy.Template"
+                                    Value="{StaticResource AdornerTemplate}"/>
+            </Trigger>
+          </Style.Triggers>
+        </Style>
+      </Button.Style>
+    </Button>
+
+  </Canvas >
+</Window>

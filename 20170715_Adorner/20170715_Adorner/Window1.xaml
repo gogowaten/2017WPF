@@ -1,0 +1,52 @@
+﻿<Window x:Class="Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20170715_Adorner"
+        mc:Ignorable="d"
+          Title="Window1" Height="150" Width="525">
+  <Window.Resources>
+    <ControlTemplate TargetType="Thumb" x:Key="ResizeHandleTemplate">
+      <Ellipse Width="10" Height="10" Margin="-3"
+                     Stroke="DimGray" Fill="LightSteelBlue"/>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="AdornerTemplate">
+      <Grid>
+        <Thumb Name="ResizeThumb_LT" 
+                       HorizontalAlignment="Left" VerticalAlignment="Top"
+                       Template="{StaticResource ResizeHandleTemplate}"/>
+        <Thumb Name="ResizeThumb_RT" 
+                       HorizontalAlignment="Right" VerticalAlignment="Top"
+                       Template="{StaticResource ResizeHandleTemplate}"/>
+        <Thumb Name="ResizeThumb_LB" 
+                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                       Template="{StaticResource ResizeHandleTemplate}"/>
+        <Thumb Name="ResizeThumb_RB" 
+                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                       Template="{StaticResource ResizeHandleTemplate}"/>
+      </Grid>
+    </ControlTemplate>
+
+    <Style x:Key="AddButtonStyle" TargetType="Button">
+      <Style.Triggers>
+        <Trigger Property="IsFocused" Value="True">
+          <Setter Property="Template" Value="{StaticResource AdornerTemplate}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </Window.Resources>
+  
+  <Grid Name="MyGrid">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Button Grid.Row="0" Content="Add" Click="Button_Click"/>
+    <WrapPanel Name="wrapPanel" Grid.Row="1">
+
+    </WrapPanel>
+  </Grid>
+</Window>
