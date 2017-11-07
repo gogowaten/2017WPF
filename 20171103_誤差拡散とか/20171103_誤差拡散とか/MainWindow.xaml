@@ -5,8 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_20171103_誤差拡散とか"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="900" Width="600">
+  <Grid>
+    <StackPanel Orientation="Horizontal">
+      <StackPanel Orientation="Vertical">
+        <Image Name="img1" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img2" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img3" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img4" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img5" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+      </StackPanel>
+      <StackPanel Orientation="Vertical">
+        <Image Name="img6" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img7" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img8" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img9" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img10" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Image Name="img11" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img12" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Image Name="img13" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img14" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
 </Window>
