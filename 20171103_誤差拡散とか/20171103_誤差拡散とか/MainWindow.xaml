@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_20171103_誤差拡散とか"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="600">
+        Title="MainWindow" Height="900" Width="800">
   <Grid>
     <StackPanel Orientation="Horizontal">
       <StackPanel Orientation="Vertical">
@@ -22,13 +22,14 @@
         <Image Name="img9" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
         <Image Name="img10" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
       </StackPanel>
-      <StackPanel Orientation="Horizontal">
+      <StackPanel Orientation="Vertical">
         <Image Name="img11" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
         <Image Name="img12" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
         <Image Name="img13" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
         <Image Name="img14" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+        <Image Name="img15" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
       </StackPanel>
     </StackPanel>
   </Grid>

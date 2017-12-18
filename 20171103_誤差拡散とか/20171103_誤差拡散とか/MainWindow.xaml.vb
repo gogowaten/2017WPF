@@ -1,6 +1,16 @@
 ﻿Imports System.Runtime.InteropServices
 
 Class MainWindow
+
+    Private Sub SaveImage(bs As BitmapSource, SavePath As String)
+        Dim enc As New BmpBitmapEncoder
+        Dim bf As BitmapFrame = BitmapFrame.Create(bs)
+        enc.Frames.Add(bf)
+        Using fs As New System.IO.FileStream(SavePath, System.IO.FileMode.Create)
+            enc.Save(fs)
+        End Using
+    End Sub
+
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
 
 
@@ -9,12 +19,13 @@ Class MainWindow
         'img = New BitmapImage(New Uri(uriString:="D:\ブログ用\テスト用画像\10x10gray.bmp"))
         'img = New BitmapImage(New Uri(uriString:="D:\ブログ用\テスト用画像\3x3gray.bmp"))
         img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\NEC_8041_2017_05_09_午後わてん_.jpg"))
-        img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\青空とトマトの花.jpg"))
+        'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\青空とトマトの花.jpg"))
+        'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\R78_G63_B58.bmp"))
 
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\kinngyo.bmp"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\セセリチョウ_NEC_0625_.png"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\セセリチョウ_NEC_0625_格子.png"))
-
+        img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\ドナルドトランプ、習近平.bmp"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\NEC_9017_2015_07_23_300ml_.jpg"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\grayScale.bmp"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\gray240.bmp"))
@@ -28,8 +39,7 @@ Class MainWindow
 
         'img = New BitmapImage(New Uri("D:\ブログ用\エクセルVBA\testLena.bmp"))
 
-        'Dim ore = img1.Stretch
-        'img1.Stretch = Stretch.UniformToFill
+        'Call TestHistgram(img)
 
         img1.Source = img
 
@@ -83,8 +93,13 @@ Class MainWindow
         'img12.Source = Ditering4x4GrayScale(wb)
         'img13.Source = SubtractiveColor8減色(img, 100)
 
-
-
+        'img11.Source = PaletteAllRed(img)
+        img11.Source = Paletteファミコン風(img)
+        img12.Source = Palette(img)
+        img13.Source = Palette白赤黒(img)
+        img14.Source = Palette3白赤黒までの5色(img)
+        img15.Source = Palette4黄1色と青4色(img)
+        'img15.Source = Paletteファミコン風(img)
 
     End Sub
 
@@ -283,7 +298,6 @@ Class MainWindow
                 pixels(p + 3) = 255 '透明度、これを指定しないと色が微妙に変化する？
             Next
         Next
-
 
         wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
         Return wb
@@ -538,15 +552,586 @@ Class MainWindow
         Return wb
     End Function
 
+    '固定パレット赤から黒5色
+    Private Function PaletteAllRed(img As BitmapSource) As BitmapSource
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+        'Dim redCount(255), greenCount(255), blueCount(255) As Long
 
 
-    Private Sub SaveImage(bs As BitmapSource, SavePath As String)
-        Dim enc As New BmpBitmapEncoder
-        Dim bf As BitmapFrame = BitmapFrame.Create(bs)
-        enc.Frames.Add(bf)
-        Using fs As New System.IO.FileStream(SavePath, System.IO.FileMode.Create)
-            enc.Save(fs)
-        End Using
+        'For y As Integer = 0 To h - 1
+        '    For x As Integer = 0 To w - 1
+        '        p = y * stride + x * 4
+        '        blueCount(pixels(p)) += 1
+        '        greenCount(pixels(p + 1)) += 1
+        '        redCount(pixels(p + 2)) += 1
+        '    Next
+        'Next
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {255, 0, 0},
+            New Integer() {192, 0, 0},
+            New Integer() {128, 0, 0},
+            New Integer() {64, 0, 0},
+            New Integer() {0, 0, 0}}
+
+
+        Dim diff As Integer = 255
+        Dim imaDiff As Integer
+        Dim kettei As Integer
+        '赤から黒まで
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                diff = Math.Abs(pixels(p + 2) - iro(0)(0))
+                kettei = 0 'iro(0)(0)
+
+                For i As Integer = 0 To UBound(iro)
+                    imaDiff = Math.Abs(pixels(p + 2) - iro(i)(0))
+                    If diff > imaDiff Then
+                        kettei = i ' iro(i)(0)
+                        diff = imaDiff
+                    End If
+                Next
+                pixels(p) = iro(kettei)(2)
+                pixels(p + 1) = iro(kettei)(1)
+                pixels(p + 2) = iro(kettei)(0) ' kettei
+            Next
+
+        Next
+        wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
+        Return wb
+
+    End Function
+
+
+    Private Function Palette(img As BitmapSource) As BitmapSource
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {255, 255, 255},
+            New Integer() {255, 0, 0},
+            New Integer() {192, 0, 0},
+            New Integer() {128, 0, 0},
+            New Integer() {64, 0, 0},
+            New Integer() {0, 0, 0}}
+
+
+        Dim diff As Integer = 255 * 3
+        Dim imaDiff As Integer
+        Dim kettei As Integer
+        '赤から黒まで
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                diff = Math.Abs(pixels(p + 2) - iro(0)(0)) + Math.Abs(pixels(p + 1) - iro(0)(1)) + Math.Abs(pixels(p + 0) - iro(0)(2))
+                kettei = 0 'iro(0)(0)
+
+                For i As Integer = 0 To UBound(iro)
+                    imaDiff = Math.Abs(pixels(p + 2) - iro(i)(0)) + Math.Abs(pixels(p + 1) - iro(i)(1)) + Math.Abs(pixels(p + 0) - iro(i)(2))
+                    If diff > imaDiff Then
+                        kettei = i ' iro(i)(0)
+                        diff = imaDiff
+                    End If
+                Next
+                pixels(p) = iro(kettei)(2)
+                pixels(p + 1) = iro(kettei)(1)
+                pixels(p + 2) = iro(kettei)(0) ' kettei
+            Next
+
+        Next
+        wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
+        Return wb
+
+    End Function
+
+    '白、赤、黒の3色
+    Private Function Palette白赤黒(img As BitmapSource) As BitmapSource
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {255, 255, 255},
+            New Integer() {255, 0, 0},
+            New Integer() {0, 0, 0}}
+
+
+        Dim diff As Integer = 255 * 3
+        Dim imaDiff As Integer
+        Dim kettei As Integer
+        '赤から黒まで
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                diff = Math.Abs(pixels(p + 2) - iro(0)(0)) + Math.Abs(pixels(p + 1) - iro(0)(1)) + Math.Abs(pixels(p + 0) - iro(0)(2))
+                kettei = 0 'iro(0)(0)
+
+                For i As Integer = 0 To UBound(iro)
+                    imaDiff = Math.Abs(pixels(p + 2) - iro(i)(0)) + Math.Abs(pixels(p + 1) - iro(i)(1)) + Math.Abs(pixels(p + 0) - iro(i)(2))
+                    If diff > imaDiff Then
+                        kettei = i ' iro(i)(0)
+                        diff = imaDiff
+                    End If
+                Next
+                pixels(p) = iro(kettei)(2)
+                pixels(p + 1) = iro(kettei)(1)
+                pixels(p + 2) = iro(kettei)(0) ' kettei
+            Next
+
+        Next
+        wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
+        Return wb
+
+    End Function
+    Private Function Palette3白赤黒までの5色(img As BitmapSource) As BitmapSource
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {255, 255, 255},
+            New Integer() {255, 128, 128},
+            New Integer() {255, 0, 0},
+            New Integer() {128, 0, 0},
+            New Integer() {0, 0, 0}}
+
+
+        Dim diff As Integer = 255 * 3
+        Dim imaDiff As Integer
+        Dim kettei As Integer
+        '赤から黒まで
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                diff = Math.Abs(pixels(p + 2) - iro(0)(0)) + Math.Abs(pixels(p + 1) - iro(0)(1)) + Math.Abs(pixels(p + 0) - iro(0)(2))
+                kettei = 0 'iro(0)(0)
+
+                For i As Integer = 0 To UBound(iro)
+                    imaDiff = Math.Abs(pixels(p + 2) - iro(i)(0)) + Math.Abs(pixels(p + 1) - iro(i)(1)) + Math.Abs(pixels(p + 0) - iro(i)(2))
+                    If diff > imaDiff Then
+                        kettei = i ' iro(i)(0)
+                        diff = imaDiff
+                    End If
+                Next
+                pixels(p) = iro(kettei)(2)
+                pixels(p + 1) = iro(kettei)(1)
+                pixels(p + 2) = iro(kettei)(0) ' kettei
+            Next
+
+        Next
+        wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
+        Return wb
+
+    End Function
+    Private Function Palette4黄1色と青4色(img As BitmapSource) As BitmapSource
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {255, 255, 0},
+            New Integer() {230, 230, 255},
+            New Integer() {155, 155, 255},
+            New Integer() {64, 64, 255},
+            New Integer() {0, 0, 255}}
+
+
+        Dim diff As Integer = 255 * 3
+        Dim imaDiff As Integer
+        Dim kettei As Integer
+        '赤から黒まで
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                diff = Math.Abs(pixels(p + 2) - iro(0)(0)) + Math.Abs(pixels(p + 1) - iro(0)(1)) + Math.Abs(pixels(p + 0) - iro(0)(2))
+                kettei = 0 'iro(0)(0)
+
+                For i As Integer = 0 To UBound(iro)
+                    imaDiff = Math.Abs(pixels(p + 2) - iro(i)(0)) + Math.Abs(pixels(p + 1) - iro(i)(1)) + Math.Abs(pixels(p + 0) - iro(i)(2))
+                    If diff > imaDiff Then
+                        kettei = i ' iro(i)(0)
+                        diff = imaDiff
+                    End If
+                Next
+                pixels(p) = iro(kettei)(2)
+                pixels(p + 1) = iro(kettei)(1)
+                pixels(p + 2) = iro(kettei)(0) ' kettei
+            Next
+
+        Next
+        wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
+        Return wb
+
+    End Function
+
+    Private Function Paletteファミコン風(img As BitmapSource) As BitmapSource
+
+
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {127, 127, 127},
+            New Integer() {188, 188, 188},
+            New Integer() {255, 255, 255},
+            New Integer() {64, 96, 248},
+            New Integer() {96, 160, 255},
+            New Integer() {144, 208, 255},
+            New Integer() {40, 0, 184},
+            New Integer() {64, 64, 255},
+            New Integer() {80, 128, 255},
+            New Integer() {160, 184, 255},
+            New Integer() {96, 16, 160},
+            New Integer() {144, 64, 240},
+            New Integer() {160, 112, 255},
+            New Integer() {192, 176, 255},
+            New Integer() {152, 32, 120},
+            New Integer() {216, 64, 192},
+            New Integer() {240, 96, 255},
+            New Integer() {224, 176, 255},
+            New Integer() {176, 16, 48},
+            New Integer() {216, 64, 96},
+            New Integer() {255, 96, 176},
+            New Integer() {255, 184, 232},
+            New Integer() {160, 48, 0},
+            New Integer() {224, 80, 0},
+            New Integer() {255, 120, 48},
+            New Integer() {255, 200, 184},
+            New Integer() {120, 64, 0},
+            New Integer() {192, 112, 0},
+            New Integer() {255, 160, 0},
+            New Integer() {255, 216, 160},
+            New Integer() {72, 88, 0},
+            New Integer() {136, 136, 0},
+            New Integer() {232, 208, 32},
+            New Integer() {255, 240, 144},
+            New Integer() {56, 104, 0},
+            New Integer() {80, 160, 0},
+            New Integer() {152, 232, 0},
+            New Integer() {200, 240, 128},
+            New Integer() {56, 108, 0},
+            New Integer() {72, 168, 16},
+            New Integer() {112, 240, 64},
+            New Integer() {160, 240, 160},
+            New Integer() {48, 96, 64},
+            New Integer() {72, 160, 104},
+            New Integer() {112, 224, 144},
+            New Integer() {160, 255, 200},
+            New Integer() {48, 80, 128},
+            New Integer() {64, 144, 192},
+            New Integer() {96, 208, 224},
+            New Integer() {160, 255, 240},
+            New Integer() {0, 0, 0},
+            New Integer() {96, 96, 96},
+            New Integer() {160, 160, 160}
+        }
+        Dim colors() As Color = New Color() {Color.FromArgb(255, 127, 127, 127),
+            Color.FromArgb(255, 188, 188, 188),
+            Color.FromArgb(255, 255, 255, 255),
+            Color.FromArgb(255, 64, 96, 248),
+            Color.FromArgb(255, 96, 160, 255),
+            Color.FromArgb(255, 144, 208, 255),
+            Color.FromArgb(255, 40, 0, 184),
+            Color.FromArgb(255, 64, 64, 255),
+            Color.FromArgb(255, 80, 128, 255),
+            Color.FromArgb(255, 160, 184, 255),
+            Color.FromArgb(255, 96, 16, 160),
+            Color.FromArgb(255, 144, 64, 240),
+            Color.FromArgb(255, 160, 112, 255),
+            Color.FromArgb(255, 192, 176, 255),
+            Color.FromArgb(255, 152, 32, 120),
+            Color.FromArgb(255, 216, 64, 192),
+            Color.FromArgb(255, 240, 96, 255),
+            Color.FromArgb(255, 224, 176, 255),
+            Color.FromArgb(255, 176, 16, 48),
+            Color.FromArgb(255, 216, 64, 96),
+            Color.FromArgb(255, 255, 96, 176),
+            Color.FromArgb(255, 255, 184, 232),
+            Color.FromArgb(255, 160, 48, 0),
+            Color.FromArgb(255, 224, 80, 0),
+            Color.FromArgb(255, 255, 120, 48),
+            Color.FromArgb(255, 255, 200, 184),
+            Color.FromArgb(255, 120, 64, 0),
+            Color.FromArgb(255, 192, 112, 0),
+            Color.FromArgb(255, 255, 160, 0),
+            Color.FromArgb(255, 255, 216, 160),
+            Color.FromArgb(255, 72, 88, 0),
+            Color.FromArgb(255, 136, 136, 0),
+            Color.FromArgb(255, 232, 208, 32),
+            Color.FromArgb(255, 255, 240, 144),
+            Color.FromArgb(255, 56, 104, 0),
+            Color.FromArgb(255, 80, 160, 0),
+            Color.FromArgb(255, 152, 232, 0),
+            Color.FromArgb(255, 200, 240, 128),
+            Color.FromArgb(255, 56, 108, 0),
+            Color.FromArgb(255, 72, 168, 16),
+            Color.FromArgb(255, 112, 240, 64),
+            Color.FromArgb(255, 160, 240, 160),
+            Color.FromArgb(255, 48, 96, 64),
+            Color.FromArgb(255, 72, 160, 104),
+            Color.FromArgb(255, 112, 224, 144),
+            Color.FromArgb(255, 160, 255, 200),
+            Color.FromArgb(255, 48, 80, 128),
+            Color.FromArgb(255, 64, 144, 192),
+            Color.FromArgb(255, 96, 208, 224),
+            Color.FromArgb(255, 160, 255, 240),
+            Color.FromArgb(255, 0, 0, 0),
+            Color.FromArgb(255, 96, 96, 96),
+            Color.FromArgb(255, 160, 160, 160)}
+
+        Dim hsvPalette() As HSV
+        ReDim hsvPalette(UBound(iro))
+        For i As Integer = 0 To UBound(iro)
+            hsvPalette(i) = RGBtoHSV(colors(i))
+        Next
+
+        Dim diff As Integer = 255 * 3
+        'Dim kidoY As Double
+        Dim imaDiff As Integer
+        Dim kettei As Integer
+
+        '赤から黒まで
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                ''rgb方式
+                'diff = Math.Abs(pixels(p + 2) - iro(0)(0)) + Math.Abs(pixels(p + 1) - iro(0)(1)) + Math.Abs(pixels(p + 0) - iro(0)(2))
+                ''kidoY = pixels(p + 2) * 0.299 + pixels(p + 1) * 0.587 * pixels(p) * 0.114
+
+                'kettei = 0 'iro(0)(0)
+
+                'For i As Integer = 0 To UBound(iro)
+                '    imaDiff = Math.Abs(pixels(p + 2) - iro(i)(0)) + Math.Abs(pixels(p + 1) - iro(i)(1)) + Math.Abs(pixels(p + 0) - iro(i)(2))
+                '    If diff > imaDiff Then
+                '        kettei = i ' iro(i)(0)
+                '        diff = imaDiff
+                '    End If
+                'Next
+
+                ''RGB距離
+                'diff = Math.Sqrt((pixels(p + 2) - iro(0)(0)) ^ 2 + (pixels(p + 1) - iro(0)(1)) ^ 2 + (pixels(p + 0) - iro(0)(2)) ^ 2)
+                'kettei = 0 'iro(0)(0)
+
+                'For i As Integer = 0 To UBound(iro)
+                '    imaDiff = Math.Sqrt((pixels(p + 2) - iro(i)(0)) ^ 2 + (pixels(p + 1) - iro(i)(1)) ^ 2 + (pixels(p + 0) - iro(i)(2)) ^ 2)
+                '    If diff > imaDiff Then
+                '        kettei = i ' iro(i)(0)
+                '        diff = imaDiff
+                '    End If
+                'Next
+
+
+
+
+                ''hsv方式
+                'Dim motoHSV As HSV = RGBtoHSV(Color.FromArgb(255, pixels(p + 2), pixels(p + 1), pixels(p)))
+                'Dim paletteHSV As HSV = RGBtoHSV(colors(0))
+                'Dim hDiff As Integer = Math.Abs(motoHSV.H - paletteHSV.H)
+                'If hDiff > 180 Then
+                '    hDiff = 360 - hDiff
+                'End If
+                'diff = hDiff + Math.Abs(motoHSV.S - paletteHSV.S) + Math.Abs(motoHSV.V - paletteHSV.V)
+                'For i As Integer = 0 To UBound(iro)
+                '    paletteHSV = RGBtoHSV(colors(i))
+                '    hDiff = Math.Abs(motoHSV.H - paletteHSV.H)
+                '    If hDiff > 180 Then
+                '        hDiff = 360 - hDiff
+                '    End If
+                '    imaDiff = hDiff + Math.Abs(motoHSV.S - paletteHSV.S) + Math.Abs(motoHSV.V - paletteHSV.V)
+                '    If diff > imaDiff Then
+                '        kettei = i
+                '        diff = imaDiff
+                '    End If
+                'Next
+
+
+                ''hsv方式、hをn倍とか
+                'Dim motoHSV As HSV = RGBtoHSV(Color.FromArgb(255, pixels(p + 2), pixels(p + 1), pixels(p)))
+                'Dim paletteHSV As HSV = RGBtoHSV(colors(0))
+                'Dim hDiff As Integer = Math.Abs(motoHSV.H - paletteHSV.H)
+                'If hDiff > 180 Then
+                '    hDiff = 360 - hDiff
+                'End If
+                'hDiff *= 3
+                'diff = hDiff + Math.Abs(motoHSV.S - paletteHSV.S) / 4 + Math.Abs(motoHSV.V - paletteHSV.V) * 1
+                'For i As Integer = 0 To UBound(iro)
+                '    paletteHSV = RGBtoHSV(colors(i))
+                '    hDiff = Math.Abs(motoHSV.H - paletteHSV.H)
+                '    If hDiff > 180 Then
+                '        hDiff = 360 - hDiff
+                '    End If
+                '    hDiff *= 3
+                '    imaDiff = hDiff + Math.Abs(motoHSV.S - paletteHSV.S) / 4 + Math.Abs(motoHSV.V - paletteHSV.V) * 1
+                '    If diff > imaDiff Then
+                '        kettei = i
+                '        diff = imaDiff
+                '    End If
+                'Next
+
+
+                'hsv方式、いろいろ調整
+                Dim motoHSV As HSV = RGBtoHSV(Color.FromArgb(255, pixels(p + 2), pixels(p + 1), pixels(p)))
+                Dim paletteHSV As HSV = RGBtoHSV(colors(0))
+                '極端な彩度と輝度は無彩色にする
+                If motoHSV.S <= 15 Or motoHSV.V >= 255 Or motoHSV.V <= 50 Then
+                    motoHSV.S = 0
+                    motoHSV.H = 0
+                End If
+                'kidoY = pixels(p + 2) * 0.299 + pixels(p + 1) * 0.587 * pixels(p) * 0.114
+                'If kidoY >= 250 Then
+                '    motoHSV.S = 0
+                '    motoHSV.H = 0
+                'End If
+                Dim hDiff As Integer = Math.Abs(motoHSV.H - paletteHSV.H)
+                If hDiff > 180 Then hDiff = 360 - hDiff
+                '色相重視の彩度軽視で色相*2、彩度/2
+                diff = hDiff * 2 + Math.Abs(motoHSV.S - paletteHSV.S) / 2 + Math.Abs(motoHSV.V - paletteHSV.V) * 1
+
+                'パレットから一番近い色を探す
+                For i As Integer = 0 To UBound(iro)
+                    paletteHSV = RGBtoHSV(colors(i))
+                    hDiff = Math.Abs(motoHSV.H - paletteHSV.H)
+                    If hDiff > 180 Then hDiff = 360 - hDiff
+                    imaDiff = hDiff * 2 + Math.Abs(motoHSV.S - paletteHSV.S) / 2 + Math.Abs(motoHSV.V - paletteHSV.V) * 1
+                    '比較
+                    If diff > imaDiff Then
+                        kettei = i
+                        diff = imaDiff
+                    End If
+                Next
+
+                pixels(p) = iro(kettei)(2)
+                pixels(p + 1) = iro(kettei)(1)
+                pixels(p + 2) = iro(kettei)(0) ' kettei
+
+
+            Next
+
+        Next
+        wb.WritePixels(New Int32Rect(0, 0, w, h), pixels, stride, 0)
+        Return wb
+
+    End Function
+    Public Structure HSV
+        Public H As Double
+        Public S As Double
+        Public V As Double
+    End Structure
+    Private Function RGBtoHSV(c As Color) As HSV
+        Dim h, s, v As Double
+
+        Dim r As Integer = c.R
+        Dim g As Integer = c.G
+        Dim b As Integer = c.B
+        Dim min As Integer = Math.Min(b, Math.Min(r, g))
+        Dim max As Integer = Math.Max(b, Math.Max(r, g))
+
+        If max = min Then
+            h = 0
+        ElseIf max = r Then
+            h = 60 * ((g - b) / (max - min))
+        ElseIf max = g Then
+            h = 60 * ((b - r) / (max - min)) + 120
+        ElseIf max = b Then
+            h = 60 * ((r - g) / (max - min)) + 240
+        End If
+
+        'hがマイナスなら360足す、RとBが同じ値だとマイナスになることがある
+        If h < 0 Then h += 360
+
+        ''100%表示の時のSV
+        's = ((max - min) / max) * 100
+        'v = (max / 255) * 100
+
+        '最大値が255表示の時のSV
+        s = (max - min) / max * 255
+        v = max
+
+        If min = 0 And max = 0 Then s = 0
+
+        Dim hsv As New HSV
+        With hsv
+            .H = h
+            .S = s
+            .V = v
+        End With
+        Return hsv
+    End Function
+    Private Function GetColorCount(pixels As Byte) As Long
+
+    End Function
+
+    Private Sub TestHistgram(img As BitmapSource)
+        Dim wb As New WriteableBitmap(img)
+        Dim h As Integer = wb.PixelHeight
+        Dim w As Integer = wb.PixelWidth
+        Dim stride As Integer = wb.BackBufferStride
+        Dim pixels(h * stride - 1) As Byte
+        Dim p As Long
+        wb.CopyPixels(pixels, stride, 0)
+
+        Dim redCount(255), greenCount(255), blueCount(255) As Long
+        For y As Integer = 0 To h - 1
+            For x As Integer = 0 To w - 1
+                p = y * stride + x * 4
+                blueCount(pixels(p)) += 1
+                greenCount(pixels(p + 1)) += 1
+                redCount(pixels(p + 2)) += 1
+            Next
+        Next
+
+        Dim min(2), max(2) As Integer
+        For i As Integer = 0 To 255
+            If redCount(i) > 0 Then max(0) = i
+            If greenCount(i) > 0 Then max(1) = i
+            If blueCount(i) > 0 Then max(2) = i
+        Next
+
+        For i As Integer = 255 To 0
+            If redCount(i) > 0 Then min(0) = i
+            If greenCount(i) > 0 Then min(1) = i
+            If blueCount(i) > 0 Then min(2) = i
+        Next
+
+        For i As Integer = min(0) To max(0)
+
+        Next
+
+        Dim iro()() As Integer = New Integer()() {
+            New Integer() {255, 255, 0},
+            New Integer() {230, 230, 255},
+            New Integer() {155, 155, 255},
+            New Integer() {64, 64, 255},
+            New Integer() {0, 0, 255}}
+
+
     End Sub
-
 End Class
