@@ -281,7 +281,7 @@ Class MainWindow
             '距離、方向ともに有効なら有効にする
             '判定結果がTrue And Trueの場合Trueになる
             .IsValid = IsDistance(mMove, tGrid, pointLocate) And IsDirection(mMove, tGrid, pointLocate)
-            .Distance = Math.Abs((pointLocate + mMove) - tGrid)
+            .Distance = Math.Abs(pointLocate + mMove - tGrid)
             .TargetLocate = tGrid
             '指定する位置
             .SetLocate = tGrid - (pointLocate - originalLocate)
