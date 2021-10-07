@@ -25,7 +25,7 @@ Class MainWindow
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\kinngyo.bmp"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\セセリチョウ_NEC_0625_.png"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\セセリチョウ_NEC_0625_格子.png"))
-        img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\ドナルドトランプ、習近平.bmp"))
+        'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\ドナルドトランプ、習近平.bmp"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\NEC_9017_2015_07_23_300ml_.jpg"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\grayScale.bmp"))
         'img = New BitmapImage(New Uri("D:\ブログ用\テスト用画像\gray240.bmp"))
