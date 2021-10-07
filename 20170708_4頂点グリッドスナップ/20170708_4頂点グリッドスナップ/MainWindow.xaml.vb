@@ -286,6 +286,7 @@ Class MainWindow
             '指定する位置
             .SetLocate = tGrid - (pointLocate - originalLocate)
         End With
+
         Return myTargetGrid
     End Function
 
